@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { decodeBirthData } from '@/lib/birthData';
 import SubscribeUrl from '@/components/SubscribeUrl';
 
@@ -8,7 +9,11 @@ interface ResultPageProps {
 
 export default async function ResultPage({ searchParams }: ResultPageProps) {
   const { data } = await searchParams;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
+
+  const headersList = await headers();
+  const host = headersList.get('host') ?? 'cicatriz.digital';
+  const proto = headersList.get('x-forwarded-proto') ?? 'https';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? `${proto}://${host}`;
 
   if (!data) {
     return (
