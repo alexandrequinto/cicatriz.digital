@@ -17,9 +17,11 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   if (!data) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center px-4">
-        <p className="text-stone-500 text-sm mb-3">No calendar data found.</p>
-        <Link href="/" className="text-amber-500 hover:text-amber-400 text-sm">← Generate a calendar</Link>
+      <div className="flex flex-col min-h-screen items-center justify-center px-5">
+        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">No calendar data found.</p>
+        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors">
+          ← Cicatriz
+        </Link>
       </div>
     );
   }
@@ -31,9 +33,11 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     noTime = !birthData.time;
   } catch {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center px-4">
-        <p className="text-stone-500 text-sm mb-3">Invalid data. Please try again.</p>
-        <Link href="/" className="text-amber-500 hover:text-amber-400 text-sm">← Generate a calendar</Link>
+      <div className="flex flex-col min-h-screen items-center justify-center px-5">
+        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">Invalid data. Please try again.</p>
+        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors">
+          ← Cicatriz
+        </Link>
       </div>
     );
   }
@@ -42,20 +46,22 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-1 w-full max-w-lg mx-auto px-4 py-8 space-y-5">
+      <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-8">
         <div className="space-y-1">
-          <Link href="/" className="text-xs text-stone-500 hover:text-stone-300 transition-colors">
-            ← cicatriz.digital
+          <Link href="/" className="text-[10px] uppercase tracking-[0.2em] text-white/25 hover:text-white/60 transition-colors">
+            ← Cicatriz
           </Link>
-          <h1 className="text-xl font-semibold text-stone-100">Calendar ready</h1>
-          <p className="text-sm text-stone-400">Subscribe to receive your personalized transits.</p>
+          <div className="pt-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 mb-1">Calendar ready</p>
+            <p className="text-white/50 text-xs">{birthData.name}</p>
+          </div>
         </div>
 
         {noTime && (
-          <div role="note" className="flex gap-2 border border-stone-700 rounded-lg px-3 py-2.5">
-            <span className="text-stone-400 text-sm" aria-hidden="true">☽</span>
-            <p className="text-xs text-stone-400">
-              No birth time provided — Moon transits are estimated using solar noon.
+          <div role="note" className="border border-white/10 px-3 py-2.5 flex gap-3">
+            <span className="text-white/30 text-sm shrink-0" aria-hidden="true">☽</span>
+            <p className="text-[10px] text-white/30 uppercase tracking-[0.12em] leading-relaxed">
+              No birth time — Moon transits estimated using solar noon
             </p>
           </div>
         )}
@@ -63,8 +69,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         <SubscribeUrl subscribeUrl={subscribeUrl} name={birthData.name} />
       </main>
 
-      <footer className="px-4 py-4 text-center">
-        <p className="text-xs text-stone-600">No account. No storage. Your data lives only in your URL.</p>
+      <footer className="px-5 py-5 border-t border-white/8">
+        <p className="text-[10px] text-white/20 uppercase tracking-widest text-center">
+          No account · No storage · Your data lives only in your URL
+        </p>
       </footer>
     </div>
   );

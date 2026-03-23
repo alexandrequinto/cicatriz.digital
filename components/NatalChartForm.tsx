@@ -11,15 +11,15 @@ interface FormErrors {
   city?: string;
 }
 
-const input = 'w-full bg-stone-900 border border-stone-700 text-stone-100 placeholder-stone-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500';
-const label = 'block text-xs font-medium text-stone-400 mb-1';
+const fieldLabel = 'block text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1.5';
+const fieldInput = 'w-full bg-black border border-white/20 text-white text-sm px-3 py-2 focus:outline-none focus:border-white/70 transition-colors placeholder:text-white/20';
 
 const FILTER_OPTIONS = [
-  { bit: FILTER_BITS['outer-transit'], label: 'Slow transits ♄♃', hint: '(Jupiter, Saturn, Uranus, Neptune, Pluto)' },
-  { bit: FILTER_BITS['inner-transit'], label: 'Personal transits ☿♀', hint: '(Sun, Mercury, Venus, Mars — frequent)' },
-  { bit: FILTER_BITS['lunar'],         label: 'Lunar phases ☽',       hint: '(New Moon, Full Moon, quarters)' },
-  { bit: FILTER_BITS['ingress'],       label: 'Sign ingresses ♈',     hint: '(planets entering new signs)' },
-  { bit: FILTER_BITS['retrograde'],    label: 'Retrograde stations ℞', hint: '' },
+  { bit: FILTER_BITS['outer-transit'], label: 'Slow transits ♄♃',       hint: 'Jupiter · Saturn · Uranus · Neptune · Pluto' },
+  { bit: FILTER_BITS['inner-transit'], label: 'Personal transits ☿♀',   hint: 'Sun · Mercury · Venus · Mars · frequent' },
+  { bit: FILTER_BITS['lunar'],         label: 'Lunar phases ☽',          hint: 'New Moon · Full Moon · quarters' },
+  { bit: FILTER_BITS['ingress'],       label: 'Sign ingresses ♈',        hint: 'Planets entering new signs' },
+  { bit: FILTER_BITS['retrograde'],    label: 'Retrograde stations ℞',   hint: '' },
 ] as const;
 
 export default function NatalChartForm() {
@@ -75,87 +75,95 @@ export default function NatalChartForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="border border-stone-800 rounded-xl p-4 space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+      {/* Name */}
       <div>
-        <label htmlFor="name" className={label}>Name</label>
+        <label htmlFor="name" className={fieldLabel}>Name</label>
         <input
           id="name" type="text" value={name}
           onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
           required autoComplete="given-name" placeholder="Your name"
           aria-invalid={!!errors.name}
-          className={input}
+          className={fieldInput}
         />
-        {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
+        {errors.name && <p className="mt-1 text-[10px] text-white/50">{errors.name}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* Date + Time — stack on mobile, side-by-side on sm+ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="date" className={label}>Birth date</label>
+          <label htmlFor="date" className={fieldLabel}>Birth date</label>
           <input
             id="date" type="date" value={date} max={today}
             onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: undefined })); }}
             required aria-invalid={!!errors.date}
-            className={input + ' [color-scheme:dark]'}
+            className={fieldInput + ' [color-scheme:dark]'}
           />
-          {errors.date && <p className="mt-1 text-xs text-red-400">{errors.date}</p>}
+          {errors.date && <p className="mt-1 text-[10px] text-white/50">{errors.date}</p>}
         </div>
 
         <div>
-          <label htmlFor="time" className={label}>
-            Birth time <span className="text-stone-600">(optional)</span>
+          <label htmlFor="time" className={fieldLabel}>
+            Birth time <span className="text-white/20 normal-case tracking-normal">optional</span>
           </label>
           <input
             id="time" type="time" value={time} disabled={unknownTime}
             onChange={(e) => setTime(e.target.value)}
-            className={input + ' [color-scheme:dark] disabled:opacity-40 disabled:cursor-not-allowed'}
+            className={fieldInput + ' [color-scheme:dark] disabled:opacity-25 disabled:cursor-not-allowed'}
           />
-          <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+          <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
             <input
               type="checkbox" checked={unknownTime}
               onChange={(e) => { setUnknownTime(e.target.checked); if (e.target.checked) setTime(''); }}
-              className="w-3.5 h-3.5 rounded accent-amber-500"
+              className="w-3 h-3 accent-white"
             />
-            <span className="text-xs text-stone-500">Unknown</span>
+            <span className="text-[10px] uppercase tracking-[0.15em] text-white/30">Unknown</span>
           </label>
         </div>
       </div>
 
+      {/* City */}
       <div>
-        <label className={label}>Birth city</label>
+        <label className={fieldLabel}>Birth city</label>
         <CitySearch onSelect={handleCitySelect} />
-        {errors.city && <p className="mt-1 text-xs text-red-400">{errors.city}</p>}
+        {errors.city && <p className="mt-1 text-[10px] text-white/50">{errors.city}</p>}
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-white/8" />
+
+      {/* Filters */}
       <div>
-        <p className={label}>Include in calendar</p>
-        <div className="space-y-2 mt-1">
-          {FILTER_OPTIONS.map(({ bit, label: optLabel, hint }) => {
+        <p className={fieldLabel}>Include in calendar</p>
+        <div className="space-y-3 mt-2">
+          {FILTER_OPTIONS.map(({ bit, label, hint }) => {
             const checked = (filters & bit) !== 0;
             return (
-              <label key={bit} className="flex items-start gap-2 cursor-pointer select-none">
+              <label key={bit} className="flex items-start gap-3 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={checked}
                   onChange={() => setFilters(checked ? filters & ~bit : filters | bit)}
-                  className="mt-0.5 w-3.5 h-3.5 rounded accent-amber-500 shrink-0"
+                  className="mt-px w-3 h-3 accent-white shrink-0"
                 />
-                <span className="text-xs text-stone-300 leading-snug">
-                  {optLabel}
-                  {hint && <span className="text-stone-600 ml-1">{hint}</span>}
+                <span className="text-xs text-white/70 leading-snug">
+                  {label}
+                  {hint && <span className="text-white/25 ml-2 text-[10px]">{hint}</span>}
                 </span>
               </label>
             );
           })}
         </div>
+        {filters === 0 && (
+          <p className="mt-3 text-[10px] text-white/40 uppercase tracking-widest">
+            No types selected — calendar will be empty
+          </p>
+        )}
       </div>
-
-      {filters === 0 && (
-        <p className="text-xs text-amber-400">No event types selected — your calendar will be empty.</p>
-      )}
 
       <button
         type="submit" disabled={isSubmitting}
-        className="w-full bg-amber-500 hover:bg-amber-400 text-stone-900 font-semibold rounded-md py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-stone-950 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-white text-black text-xs uppercase tracking-[0.2em] py-3 hover:bg-white/90 transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Generating…' : 'Generate calendar'}
       </button>

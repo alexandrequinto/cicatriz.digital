@@ -101,27 +101,27 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
           type="text" value={query} onChange={handleChange} onKeyDown={handleKeyDown}
           placeholder="Search city…" autoComplete="off"
           aria-label="Birth city" aria-expanded={isOpen} aria-haspopup="listbox"
-          className="w-full bg-stone-900 border border-stone-700 text-stone-100 placeholder-stone-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 pr-8"
+          className="w-full bg-black border border-white/20 text-white placeholder:text-white/20 px-3 py-2 text-sm focus:outline-none focus:border-white/70 transition-colors pr-8"
         />
         {isLoading && (
-          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 text-stone-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
         )}
       </div>
 
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-[10px] text-white/50">{error}</p>}
 
       {isOpen && results.length > 0 && (
-        <ul role="listbox" className="absolute z-50 w-full mt-1 bg-stone-900 border border-stone-700 rounded-md shadow-xl overflow-hidden">
+        <ul role="listbox" className="absolute z-50 w-full mt-1 bg-black border border-white/20 shadow-xl overflow-hidden">
           {results.map((result, index) => {
             const label = result.display_name.length > 60 ? result.display_name.slice(0, 60) + '…' : result.display_name;
             return (
               <li
                 key={result.place_id} role="option" aria-selected={index === activeIndex}
                 onMouseDown={() => handleSelect(result)} onMouseEnter={() => setActiveIndex(index)}
-                className={`px-3 py-2 cursor-pointer text-xs transition-colors ${index === activeIndex ? 'bg-stone-800 text-amber-400' : 'text-stone-300 hover:bg-stone-800/60'}`}
+                className={`px-3 py-2 cursor-pointer text-xs transition-colors ${index === activeIndex ? 'bg-white text-black' : 'text-white/60 hover:bg-white/8'}`}
               >
                 {label}
               </li>
