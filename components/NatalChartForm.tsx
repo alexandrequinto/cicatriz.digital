@@ -149,6 +149,10 @@ export default function NatalChartForm() {
         </div>
       </div>
 
+      {filters === 0 && (
+        <p className="text-xs text-amber-400">No event types selected — your calendar will be empty.</p>
+      )}
+
       <button
         type="submit" disabled={isSubmitting}
         className="w-full bg-amber-500 hover:bg-amber-400 text-stone-900 font-semibold rounded-md py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-stone-950 disabled:opacity-50 disabled:cursor-not-allowed"

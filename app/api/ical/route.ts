@@ -64,6 +64,11 @@ export async function GET(request: NextRequest) {
   if (birth.time && !/^\d{2}:\d{2}$/.test(birth.time)) {
     return new Response('Invalid birth time format', { status: 400 });
   }
+  // Validate filters bitmask if present
+  if (birth.filters != null && (!Number.isInteger(birth.filters) || birth.filters < 0 || birth.filters > 31)) {
+    return new Response('Invalid filters value', { status: 400 });
+  }
+
   // Validate timezone against IANA database
   if (!birth.tz || birth.tz.length > 100) {
     return new Response('Invalid timezone', { status: 400 });
