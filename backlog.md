@@ -13,8 +13,6 @@
 - [ ] **Correct "refreshes every 6 hours" copy** — Google Calendar ignores `X-PUBLISHED-TTL` and polls every 12–24h in practice. UI copy on landing page and result page promises 6h. Change to "Updates daily" or "Google Calendar checks periodically." `[Trust · Quick win]`
 
 ### Brand & Domain
-- [ ] **Custom domain** — Point cicatriz.digital to Vercel deployment and set `NEXT_PUBLIC_APP_URL=https://cicatriz.digital`. Unblocks subscribe URL, OG metadata resolution, and robots.txt fix. `[Ops]`
-- [ ] **Subscribe URL uses correct domain** — iCal subscribe URL falls back to Vercel preview URL when `NEXT_PUBLIC_APP_URL` is unset. Blocked by: custom domain above. `[UX]`
 - [ ] **Branding cleanup** — Remove remaining "Astro iCal" references in `package.json`, `prodId` in `calendarBuilder`, and any other config. `[Brand · Quick win]`
 
 ### Engineering
@@ -50,13 +48,16 @@
 - [ ] **HowTo and FAQ structured data** — Add `HowTo` schema to the result page subscribe steps and `FAQPage` schema to the /guide page to capture featured snippet real estate for "how to add astrology calendar to Google Calendar." `[SEO]`
 
 ### Growth & Monetization
-- [ ] **Cookieless analytics (Plausible or Fathom)** — No visibility into where users drop off (form abandon, copy but no subscribe, etc.). A privacy-respecting, cookieless tool measuring the form → result → copy funnel is prerequisite to data-driven prioritization. Consistent with the no-storage brand if disclosed. `[Growth · Observability]`
+- [ ] **Funnel event tracking** — Vercel Analytics is enabled but only tracks pageviews. Add custom events (form submit, copy URL click) to see where users drop off in the form → result → subscribe funnel. `[Growth · Observability]`
 - [ ] **Trust signals for the privacy model** — "No account. No storage." is 10px stone-600 text — least visible element on the page. For a product collecting birth coordinates, the privacy architecture is genuinely differentiating. Give it prominent treatment with a plain-language explanation of how the token works. `[Trust · Growth]`
 - [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. Astrology engagement is extremely high in Brazil, Mexico, Argentina, and Spain. Localizing UI copy and metadata would unlock large, culturally aligned markets where the brand name already resonates. `[Growth]`
 - [ ] **Premium signed-URL tier** — One-time payment generates a signed token unlocking: 24-month window, additional bodies (Chiron, Nodes), richer event descriptions. No user database required — premium entitlement lives in the signed token. Preserves the no-account ethos. `[Monetization]`
 
 ## Done
 
+- [x] **Vercel Analytics** — `@vercel/analytics` installed, `<Analytics />` added to root layout.
+- [x] **Subscribe URL correct domain** — Uses request headers (`host` + `x-forwarded-proto`) as fallback so the full URL is always shown regardless of env var state.
+- [x] **NEXT_PUBLIC_APP_URL set** — `https://cicatriz.digital` configured in Vercel project settings.
 - [x] **Metadata & social sharing** — Full SEO and social metadata under the cicatriz.digital brand: page title/description, Open Graph tags, Twitter/X card, dynamic OG image (1200×630), JSON-LD WebApplication schema, favicon (☽ 32px) and Apple touch icon (180px). Removed leftover purple gradient from layout.tsx.
 - [x] **Redesign UI** — Replaced purple palette with warm charcoal + amber. Astrological symbols replace emojis. Compact mobile-first layout (max-w-lg, reduced padding, 2-col date/time row).
 - [x] **Fix city selection timezone lookup** — Replaced dead `timezonefinder.michelfe.eu` with a Next.js proxy route (`/api/timezone`) calling `timeapi.io`.
