@@ -63,9 +63,14 @@ export async function GET(request: NextRequest) {
   if (birth.time && !/^\d{2}:\d{2}$/.test(birth.time)) {
     return new Response('Invalid birth time format', { status: 400 });
   }
-  // Validate timezone is a non-empty string (IANA check is expensive; trust Nominatim)
+  // Validate timezone against IANA database
   if (!birth.tz || birth.tz.length > 100) {
     return new Response('Invalid timezone', { status: 400 });
+  }
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: birth.tz });
+  } catch {
+    return new Response('Unknown timezone', { status: 400 });
   }
 
   const requestId = Math.random().toString(36).slice(2, 9);

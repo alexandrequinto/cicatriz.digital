@@ -11,12 +11,17 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",  // Next.js requires unsafe-eval in dev
+      // Next.js App Router requires 'unsafe-eval' + 'unsafe-inline' for hydration/code-splitting.
+      // Nonce-based CSP requires middleware and is tracked as a future improvement.
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https://nominatim.openstreetmap.org",
       "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
     ].join('; '),
   },
 ];

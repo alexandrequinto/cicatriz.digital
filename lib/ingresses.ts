@@ -30,6 +30,9 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
     let cursorMs = windowStart.getTime();
     let prevSign = getSignIndex(getPlanetLongitude(planet, new Date(cursorMs)));
     let prevLon = getPlanetLongitude(planet, new Date(cursorMs));
+    // After a sign ingress, the next retrograde check's prevDelta would span the sign
+    // boundary producing a corrupt delta. Skip detection for one step after any ingress.
+    let skipNextRetrogradeCheck = false;
 
     while (cursorMs <= windowEnd.getTime()) {
       cursorMs += step;
@@ -37,7 +40,8 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
       const lon = getPlanetLongitude(planet, cursor);
       const sign = getSignIndex(lon);
 
-      if (sign !== prevSign) {
+      const hadIngress = sign !== prevSign;
+      if (hadIngress) {
         const signName = SIGN_NAMES[sign];
         const sym = PLANET_SYMBOLS[planet] ?? '';
         events.push({
@@ -49,10 +53,11 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
           category: 'ingress',
         });
         prevSign = sign;
-        prevLon = lon; // reset baseline to prevent spurious retrograde detection across sign boundary
+        prevLon = lon; // reset baseline — prevents corrupt delta in current step
+        skipNextRetrogradeCheck = true; // next step's prevDelta would still span boundary
       }
 
-      if (RETROGRADE_PLANETS.includes(planet) && step === ONE_DAY) {
+      if (RETROGRADE_PLANETS.includes(planet) && step === ONE_DAY && !hadIngress && !skipNextRetrogradeCheck) {
         const prevDelta = prevLon - getPlanetLongitude(planet, new Date(cursorMs - 2 * step));
         const currDelta = lon - prevLon;
         const normPrev = prevDelta > 180 ? prevDelta - 360 : prevDelta < -180 ? prevDelta + 360 : prevDelta;
@@ -77,6 +82,8 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
             category: 'retrograde',
           });
         }
+      } else if (!hadIngress) {
+        skipNextRetrogradeCheck = false;
       }
 
       prevLon = lon;
