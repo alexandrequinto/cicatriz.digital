@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CitySearch from '@/components/CitySearch';
-import { encodeBirthData } from '@/lib/birthData';
+import { encodeBirthData, FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
 
 interface FormErrors {
   name?: string;
@@ -13,6 +13,14 @@ interface FormErrors {
 
 const input = 'w-full bg-stone-900 border border-stone-700 text-stone-100 placeholder-stone-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500';
 const label = 'block text-xs font-medium text-stone-400 mb-1';
+
+const FILTER_OPTIONS = [
+  { bit: FILTER_BITS['outer-transit'], label: 'Slow transits ♄♃', hint: '(Jupiter, Saturn, Uranus, Neptune, Pluto)' },
+  { bit: FILTER_BITS['inner-transit'], label: 'Personal transits ☿♀', hint: '(Sun, Mercury, Venus, Mars — frequent)' },
+  { bit: FILTER_BITS['lunar'],         label: 'Lunar phases ☽',       hint: '(New Moon, Full Moon, quarters)' },
+  { bit: FILTER_BITS['ingress'],       label: 'Sign ingresses ♈',     hint: '(planets entering new signs)' },
+  { bit: FILTER_BITS['retrograde'],    label: 'Retrograde stations ℞', hint: '' },
+] as const;
 
 export default function NatalChartForm() {
   const router = useRouter();
@@ -25,6 +33,7 @@ export default function NatalChartForm() {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [tz, setTz] = useState('');
+  const [filters, setFilters] = useState(ALL_FILTERS);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,6 +66,7 @@ export default function NatalChartForm() {
         name: name.trim(), date,
         time: unknownTime || !time ? null : time,
         lat: lat!, lng: lng!, tz, city,
+        filters,
       });
       router.push('/result?data=' + token);
     } catch {
@@ -114,6 +124,29 @@ export default function NatalChartForm() {
         <label className={label}>Birth city</label>
         <CitySearch onSelect={handleCitySelect} />
         {errors.city && <p className="mt-1 text-xs text-red-400">{errors.city}</p>}
+      </div>
+
+      <div>
+        <p className={label}>Include in calendar</p>
+        <div className="space-y-2 mt-1">
+          {FILTER_OPTIONS.map(({ bit, label: optLabel, hint }) => {
+            const checked = (filters & bit) !== 0;
+            return (
+              <label key={bit} className="flex items-start gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => setFilters(checked ? filters & ~bit : filters | bit)}
+                  className="mt-0.5 w-3.5 h-3.5 rounded accent-amber-500 shrink-0"
+                />
+                <span className="text-xs text-stone-300 leading-snug">
+                  {optLabel}
+                  {hint && <span className="text-stone-600 ml-1">{hint}</span>}
+                </span>
+              </label>
+            );
+          })}
+        </div>
       </div>
 
       <button

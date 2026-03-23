@@ -6,6 +6,10 @@ export interface BirthData {
   lng: number;
   tz: string;         // IANA timezone e.g. "America/New_York"
   city: string;
+  // Bitmask of enabled event categories. Absent = all enabled (legacy tokens).
+  // bit 0 (1): outer-transit, bit 1 (2): inner-transit, bit 2 (4): lunar,
+  // bit 3 (8): ingress, bit 4 (16): retrograde. All enabled = 31.
+  filters?: number;
 }
 
 export interface NatalPlanet {

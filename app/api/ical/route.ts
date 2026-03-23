@@ -6,6 +6,7 @@ import { getPersonalTransits } from '@/lib/personalTransits';
 import { getLunarPhaseEvents } from '@/lib/lunarPhases';
 import { getIngressAndRetrogradeEvents } from '@/lib/ingresses';
 import { buildCalendar } from '@/lib/calendarBuilder';
+import { FILTER_BITS } from '@/lib/birthData';
 
 // Use Node.js runtime (NOT edge) — astronomy-engine needs full Node.js
 export const runtime = 'nodejs';
@@ -101,9 +102,16 @@ export async function GET(request: NextRequest) {
     const t2 = Date.now();
 
     const allEvents = [...outerTransits, ...innerTransits, ...lunar, ...ingresses];
-    allEvents.sort((a, b) => a.exactDate.getTime() - b.exactDate.getTime());
 
-    const calendar = buildCalendar(birth, allEvents, data);
+    // Apply category filter if specified (absent or 31 = all enabled, backward-compatible)
+    const activeFilters = birth.filters;
+    const filteredEvents = activeFilters != null
+      ? allEvents.filter(e => (activeFilters & FILTER_BITS[e.category]) !== 0)
+      : allEvents;
+
+    filteredEvents.sort((a, b) => a.exactDate.getTime() - b.exactDate.getTime());
+
+    const calendar = buildCalendar(birth, filteredEvents, data);
     icsContent = calendar.toString();
 
     console.log(JSON.stringify({
@@ -111,12 +119,14 @@ export async function GET(request: NextRequest) {
       event: 'ical_generated',
       computeMs: t2 - t1,
       totalMs: Date.now() - t0,
+      filters: activeFilters ?? 'all',
       eventCounts: {
         outer: outerTransits.length,
         inner: innerTransits.length,
         lunar: lunar.length,
         ingresses: ingresses.length,
         total: allEvents.length,
+        filtered: filteredEvents.length,
       },
     }));
   } catch (err) {
