@@ -77,9 +77,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
     setSelectedLabel(label);
 
     try {
-      const tzRes = await fetch(
-        `https://timezonefinder.michelfe.eu/api/0?lng=${lng}&lat=${lat}`
-      );
+      const tzRes = await fetch(`/api/timezone?lat=${lat}&lng=${lng}`);
       if (!tzRes.ok) throw new Error('Timezone fetch failed');
       const tzData = await tzRes.json();
       onSelect(result.display_name, lat, lng, tzData.timezone);
