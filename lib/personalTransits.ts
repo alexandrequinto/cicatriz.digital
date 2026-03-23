@@ -1,6 +1,7 @@
 import type { NatalPlanet, TransitEvent } from '@/types/astro';
 import { getPlanetLongitude, type PlanetName } from './ephemeris';
 import { angularDifference, PLANET_ORB } from './aspects';
+import { getInterpretation } from './interpretations';
 
 const INNER_PLANETS: PlanetName[] = ['Sun', 'Mercury', 'Venus', 'Mars'];
 const INNER_ASPECTS = [
@@ -52,9 +53,11 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
             const egressDate = new Date(cursorMs);
             if (ingressDate && exactDate) {
               const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
+              const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
+              const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
               events.push({
                 title: `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`,
-                description: `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`,
+                description: interp ? `${mech}\n\n${interp}` : mech,
                 startDate: ingressDate,
                 endDate: egressDate,
                 exactDate,
@@ -73,9 +76,11 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
         // After the while loop, flush any open window
         if (inWindow && ingressDate && exactDate) {
           const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
+          const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
+          const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
           events.push({
             title: `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`,
-            description: `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`,
+            description: interp ? `${mech}\n\n${interp}` : mech,
             startDate: ingressDate,
             endDate: new Date(windowEnd.getTime()),
             exactDate,

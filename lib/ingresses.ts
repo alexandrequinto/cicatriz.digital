@@ -1,5 +1,6 @@
 import { getPlanetLongitude, type PlanetName } from './ephemeris';
 import type { TransitEvent } from '@/types/astro';
+import { getInterpretation } from './interpretations';
 
 const INGRESS_PLANETS: PlanetName[] = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
 const RETROGRADE_PLANETS: PlanetName[] = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
@@ -44,9 +45,11 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
       if (hadIngress) {
         const signName = SIGN_NAMES[sign];
         const sym = PLANET_SYMBOLS[planet] ?? '';
+        const ingressMech = `${planet} enters ${signName}`;
+        const ingressInterp = getInterpretation(`${planet}|ingress|${signName}`);
         events.push({
           title: `${planet} ${sym} enters ${signName}`,
-          description: `${planet} enters ${signName}`,
+          description: ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech,
           startDate: cursor,
           endDate: new Date(cursorMs + ONE_HOUR),
           exactDate: cursor,
@@ -64,18 +67,22 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
         const normCurr = currDelta > 180 ? currDelta - 360 : currDelta < -180 ? currDelta + 360 : currDelta;
 
         if (normPrev > 0 && normCurr < 0) {
+          const rxMech = `${planet} stations retrograde — begins apparent backward motion`;
+          const rxInterp = getInterpretation(`${planet}|retrograde`);
           events.push({
             title: `${planet} Retrograde ℞`,
-            description: `${planet} stations retrograde — begins apparent backward motion`,
+            description: rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech,
             startDate: cursor,
             endDate: new Date(cursorMs + ONE_HOUR),
             exactDate: cursor,
             category: 'retrograde',
           });
         } else if (normPrev < 0 && normCurr > 0) {
+          const dMech = `${planet} stations direct — resumes forward motion`;
+          const dInterp = getInterpretation(`${planet}|direct`);
           events.push({
             title: `${planet} Direct ↻`,
-            description: `${planet} stations direct — resumes forward motion`,
+            description: dInterp ? `${dMech}\n\n${dInterp}` : dMech,
             startDate: cursor,
             endDate: new Date(cursorMs + ONE_HOUR),
             exactDate: cursor,
