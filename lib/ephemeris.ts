@@ -5,19 +5,36 @@ export type PlanetName = 'Sun' | 'Moon' | 'Mercury' | 'Venus' | 'Mars' | 'Jupite
 
 export const ALL_PLANETS: PlanetName[] = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
+// Module-level cache — lives for the duration of one request (Node.js serverless)
+const lonCache = new Map<string, number>();
+
 export function getPlanetLongitude(planet: PlanetName, date: Date): number {
+  // Round to nearest hour for cache key — sufficient precision for transit scanning
+  const hourKey = Math.floor(date.getTime() / 3_600_000);
+  const cacheKey = `${planet}:${hourKey}`;
+
+  if (lonCache.has(cacheKey)) return lonCache.get(cacheKey)!;
+
+  let lon: number;
   if (planet === 'Moon') {
     const sph = Astronomy.EclipticGeoMoon(date);
-    return ((sph.lon % 360) + 360) % 360;
-  }
-  if (planet === 'Sun') {
+    lon = ((sph.lon % 360) + 360) % 360;
+  } else if (planet === 'Sun') {
     const pos = Astronomy.SunPosition(date);
-    return ((pos.elon % 360) + 360) % 360;
+    lon = ((pos.elon % 360) + 360) % 360;
+  } else {
+    const body = Astronomy.Body[planet as keyof typeof Astronomy.Body];
+    const geoVec = Astronomy.GeoVector(body, date, true);
+    const ecl = Astronomy.Ecliptic(geoVec);
+    lon = ((ecl.elon % 360) + 360) % 360;
   }
-  const body = Astronomy.Body[planet as keyof typeof Astronomy.Body];
-  const geoVec = Astronomy.GeoVector(body, date, true);
-  const ecl = Astronomy.Ecliptic(geoVec);
-  return ((ecl.elon % 360) + 360) % 360;
+
+  lonCache.set(cacheKey, lon);
+  return lon;
+}
+
+export function clearLonCache(): void {
+  lonCache.clear();
 }
 
 export function getNatalPositions(birth: BirthData): NatalPlanet[] {

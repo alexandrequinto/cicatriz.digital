@@ -69,6 +69,19 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
 
           cursorMs += SIX_HOURS;
         }
+
+        // After the while loop, flush any open window
+        if (inWindow && ingressDate && exactDate) {
+          const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
+          events.push({
+            title: `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`,
+            description: `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`,
+            startDate: ingressDate,
+            endDate: new Date(windowEnd.getTime()),
+            exactDate,
+            category: 'inner-transit',
+          });
+        }
       }
     }
   }

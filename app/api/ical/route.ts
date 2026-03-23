@@ -50,21 +50,86 @@ export async function GET(request: NextRequest) {
     return new Response('Malformed birth data', { status: 400 });
   }
 
-  const now = new Date();
-  const natal = getNatalPositions(birth);
+  // Validate date is a real ISO date
+  const birthDate = new Date(birth.date + 'T12:00:00Z');
+  if (isNaN(birthDate.getTime())) {
+    return new Response('Invalid birth date', { status: 400 });
+  }
+  // Validate lat/lng ranges
+  if (birth.lat < -90 || birth.lat > 90 || birth.lng < -180 || birth.lng > 180) {
+    return new Response('Invalid coordinates', { status: 400 });
+  }
+  // Validate time format if present
+  if (birth.time && !/^\d{2}:\d{2}$/.test(birth.time)) {
+    return new Response('Invalid birth time format', { status: 400 });
+  }
+  // Validate timezone is a non-empty string (IANA check is expensive; trust Nominatim)
+  if (!birth.tz || birth.tz.length > 100) {
+    return new Response('Invalid timezone', { status: 400 });
+  }
 
-  const [outerTransits, innerTransits, lunar, ingresses] = await Promise.all([
-    Promise.resolve(getOuterTransits(natal, now, 12)),
-    Promise.resolve(getPersonalTransits(natal, now, 12)),
-    Promise.resolve(getLunarPhaseEvents(now, 12)),
-    Promise.resolve(getIngressAndRetrogradeEvents(now, 12)),
-  ]);
+  const requestId = Math.random().toString(36).slice(2, 9);
+  const t0 = Date.now();
+  let icsContent: string;
 
-  const allEvents = [...outerTransits, ...innerTransits, ...lunar, ...ingresses];
-  allEvents.sort((a, b) => a.exactDate.getTime() - b.exactDate.getTime());
+  try {
+    const now = new Date();
+    const natal = getNatalPositions(birth);
 
-  const calendar = buildCalendar(birth, allEvents);
-  const icsContent = calendar.toString();
+    const t1 = Date.now();
+
+    const TIMEOUT_MS = 20_000;
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS)
+    );
+
+    const [outerTransits, innerTransits, lunar, ingresses] = await Promise.race([
+      Promise.all([
+        Promise.resolve(getOuterTransits(natal, now, 12)),
+        Promise.resolve(getPersonalTransits(natal, now, 12)),
+        Promise.resolve(getLunarPhaseEvents(now, 12)),
+        Promise.resolve(getIngressAndRetrogradeEvents(now, 12)),
+      ]),
+      timeoutPromise,
+    ]) as [ReturnType<typeof getOuterTransits>, ReturnType<typeof getPersonalTransits>, ReturnType<typeof getLunarPhaseEvents>, ReturnType<typeof getIngressAndRetrogradeEvents>];
+
+    const t2 = Date.now();
+
+    const allEvents = [...outerTransits, ...innerTransits, ...lunar, ...ingresses];
+    allEvents.sort((a, b) => a.exactDate.getTime() - b.exactDate.getTime());
+
+    const calendar = buildCalendar(birth, allEvents, data);
+    icsContent = calendar.toString();
+
+    console.log(JSON.stringify({
+      requestId,
+      event: 'ical_generated',
+      computeMs: t2 - t1,
+      totalMs: Date.now() - t0,
+      eventCounts: {
+        outer: outerTransits.length,
+        inner: innerTransits.length,
+        lunar: lunar.length,
+        ingresses: ingresses.length,
+        total: allEvents.length,
+      },
+    }));
+  } catch (err) {
+    const isTimeout = err instanceof Error && err.message === 'timeout';
+    if (isTimeout) {
+      return new Response('Calendar generation timed out', {
+        status: 503,
+        headers: { 'Retry-After': '30' },
+      });
+    }
+    console.error(JSON.stringify({
+      requestId,
+      event: 'ical_error',
+      error: err instanceof Error ? err.message : String(err),
+      totalMs: Date.now() - t0,
+    }));
+    return new Response('Failed to generate calendar', { status: 500 });
+  }
 
   const safeName = birth.name.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
 

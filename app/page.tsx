@@ -4,7 +4,7 @@ const features = [
   { symbol: '♄♃', label: 'Planetary transits' },
   { symbol: '☽', label: 'Lunar phases' },
   { symbol: '♈', label: 'Sign ingresses & retrogrades' },
-  { symbol: '↺', label: 'Refreshes every 6 hours' },
+  { symbol: '↺', label: 'Updates automatically' },
 ];
 
 export default function Home() {

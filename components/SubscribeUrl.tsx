@@ -50,7 +50,7 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
           </button>
         </div>
 
-        <p className="text-xs text-stone-600">Refreshes every 6 hours.</p>
+        <p className="text-xs text-stone-600">Google Calendar checks for updates periodically.</p>
       </div>
 
       <div className="border border-stone-800 rounded-xl p-4 space-y-3">

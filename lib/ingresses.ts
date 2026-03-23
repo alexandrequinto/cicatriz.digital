@@ -49,6 +49,7 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
           category: 'ingress',
         });
         prevSign = sign;
+        prevLon = lon; // reset baseline to prevent spurious retrograde detection across sign boundary
       }
 
       if (RETROGRADE_PLANETS.includes(planet) && step === ONE_DAY) {

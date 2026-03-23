@@ -5,26 +5,12 @@
 ## To Do
 
 ### Bugs
-- [ ] **Stable iCal event UIDs** — `calendarBuilder` generates a random UID per event on every request. Calendar clients (Google, Apple) create duplicate entries on each refresh instead of updating existing ones. UIDs must be deterministic, derived from planet + aspect + natal target + approximate date. `[Engineering · Correctness · High]`
-- [ ] **Drop open-ended personal transit at window edge** — `getPersonalTransits` silently drops any transit still within orb on the last loop iteration. The equivalent case is handled in `getOuterTransits` but missing here. `[Engineering · Correctness]`
-- [ ] **False retrograde events at sign boundaries** — `getIngressAndRetrogradeEvents` can fire a spurious retrograde or direct station immediately after a sign ingress because `prevLon` is not reset when `prevSign` changes, producing a corrupt delta across the 30° boundary. `[Engineering · Correctness]`
-- [ ] **City search state desync on timezone failure** — When `timeapi.io` fails, the input shows the selected city label but `tz` is empty, so the form error says "select a city" rather than "timezone lookup failed." Input should reset to the pre-selection query on failure. `[UX · Correctness]`
-- [ ] **Fix robots.txt sitemap URL** — Currently points to `your-app.vercel.app`. Should be `https://cicatriz.digital/sitemap.xml`. Quick fix, blocks day-one SEO. `[SEO · Quick win]`
-- [ ] **Correct "refreshes every 6 hours" copy** — Google Calendar ignores `X-PUBLISHED-TTL` and polls every 12–24h in practice. UI copy on landing page and result page promises 6h. Change to "Updates daily" or "Google Calendar checks periodically." `[Trust · Quick win]`
-
-### Brand & Domain
-- [ ] **Branding cleanup** — Remove remaining "Astro iCal" references in `package.json`, `prodId` in `calendarBuilder`, and any other config. `[Brand · Quick win]`
+- [ ] **Durable rate limiter** — In-memory `requestCounts` Map resets on every cold start. Replace with Vercel KV atomic increment with TTL, plus `Retry-After` and `X-RateLimit-*` headers. `[Security]`
+- [ ] **Sign the birth data token** — Any valid base64url JSON is accepted. Add HMAC-SHA256 signature using a server secret so forged/tampered tokens are rejected before computation. `[Security]`
 
 ### Engineering
 - [ ] **Deterministic response caching** — The full 12-month transit computation runs on every request. Cache the rendered ICS in Vercel KV keyed on a hash of the token, TTL 12h. This is prerequisite to scaling. `[Performance]`
-- [ ] **Memoize planet longitude calls** — `getIngressAndRetrogradeEvents` fetches the same longitude 2–3× per step per planet. Pre-compute a longitude table once per planet and reuse across all callers. `[Performance]`
-- [ ] **Durable rate limiter** — In-memory `requestCounts` Map resets on every cold start. Replace with Vercel KV atomic increment with TTL, plus `Retry-After` and `X-RateLimit-*` headers. `[Security]`
-- [ ] **Sign the birth data token** — Any valid base64url JSON is accepted. Add HMAC-SHA256 signature using a server secret so forged/tampered tokens are rejected before computation. `[Security]`
-- [ ] **Validate decoded birth data fields** — Date string, lat/lng ranges, time format, and IANA timezone identifier are not validated after decode. An invalid date silently produces NaN passed to astronomy-engine. `[Reliability]`
-- [ ] **Wrap computation in try/catch** — An unhandled exception in any generator produces a 500 with no body and no logged context. Add a top-level try/catch, structured error log, and a clean 500 JSON response. `[Reliability]`
-- [ ] **Internal timeout guard** — No deadline on the synchronous computation loop. If the scan runs long, Vercel terminates mid-stream with a silent 504. Return a 503 + `Retry-After` if a budget (~20s) is exceeded. `[Reliability]`
-- [ ] **Structured logging and per-phase timing** — Zero observability today. Log request IP hash, token hash, per-generator durations, event counts, and response status as structured JSON to Vercel logs. `[Observability]`
-- [ ] **Test suite with Vitest** — No tests exist. Highest-risk paths: token round-trip, `angularDifference` at 0°/360° wrap, sign cusp boundary in `getSign`, open-ended transit fallback, retrograde across sign boundary, lunar phase loop termination. `[Testing]`
+- [ ] **Transit interpretation copy** — Event descriptions are one-liner mechanical summaries (e.g. "Venus conjunct your natal Moon in Cancer"). Enrich with a plain-language interpretation of what the transit means. Approach: pre-generate a JSON lookup table covering all combinations (transiting planet × aspect × natal planet) using Claude, stored in `lib/transitInterpretations.json`. At event generation time, look up the key `"Venus|conjunct|Moon"` and append the blurb to the description. Entries should be 2–3 sentences, grounded, actionable, tone-matched to the app. Combinations: 9 transiting planets × 5 aspects × 10 natal targets ≈ 450 entries. Retrograde/ingress events get shorter entries keyed by `"Mercury|retrograde"` / `"Mars|ingress"`. This is zero-runtime-cost once the JSON is generated. `[Feature · Content · High value]`
 
 ### UX
 - [ ] **Birth data confirmation card** — Result page shows no confirmation of what was captured. Show "Calendar for [Name] · [date] · [city]" so users can verify before subscribing, with an edit link back to the form. `[Trust · UX]`
@@ -55,6 +41,19 @@
 
 ## Done
 
+- [x] **Stable iCal event UIDs** — `calendarBuilder` now generates deterministic UIDs via SHA-1 hash of `tokenHash|title|date`, preventing duplicate calendar entries on refresh.
+- [x] **Drop open-ended personal transit at window edge** — `getPersonalTransits` now flushes any open transit window after the scan loop ends, matching the `getOuterTransits` pattern.
+- [x] **False retrograde events at sign boundaries** — `getIngressAndRetrogradeEvents` now resets `prevLon` after detecting a sign ingress, eliminating spurious retrograde/direct stations at 30° boundaries.
+- [x] **City search state desync on timezone failure** — `CitySearch` stores `previousQuery` before overwriting; restores it on timezone lookup failure so the form shows the correct error.
+- [x] **Fix robots.txt sitemap URL** — Points to `https://cicatriz.digital/sitemap.xml`.
+- [x] **Correct "refreshes every 6 hours" copy** — Changed to "Google Calendar checks for updates periodically."
+- [x] **Branding cleanup** — `package.json` name is `cicatriz-digital`; `calendarBuilder` prodId uses `cicatriz.digital`.
+- [x] **Memoize planet longitude calls** — Module-level `lonCache` Map in `ephemeris.ts` keyed on `planet:hourKey` eliminates redundant VSOP87 calls within a request.
+- [x] **Validate decoded birth data fields** — `/api/ical` validates date format, lat/lng ranges, time format, and timezone string before running any computation.
+- [x] **Wrap computation in try/catch** — Top-level try/catch in `/api/ical` returns structured 500 JSON with logged context; timeout returns 503 + `Retry-After`.
+- [x] **Internal timeout guard** — 20s `Promise.race` deadline on the computation block; returns 503 if exceeded.
+- [x] **Structured logging and per-phase timing** — `/api/ical` logs `requestId`, event counts, per-phase durations, and errors as JSON to Vercel logs.
+- [x] **Test suite with Vitest** — `vitest.config.ts` + tests for `birthData` round-trip, `angularDifference` edge cases, and `getPlanetLongitude` memoization.
 - [x] **Vercel Analytics** — `@vercel/analytics` installed, `<Analytics />` added to root layout.
 - [x] **Subscribe URL correct domain** — Uses request headers (`host` + `x-forwarded-proto`) as fallback so the full URL is always shown regardless of env var state.
 - [x] **NEXT_PUBLIC_APP_URL set** — `https://cicatriz.digital` configured in Vercel project settings.

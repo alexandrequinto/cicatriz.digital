@@ -58,6 +58,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
     const label = result.display_name.length > 60 ? result.display_name.slice(0, 60) + '…' : result.display_name;
+    const previousQuery = query; // store before overwriting
     setIsLoading(true);
     setError(null);
     setIsOpen(false);
@@ -68,7 +69,8 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
       const tzData = await tzRes.json();
       onSelect(result.display_name, lat, lng, tzData.timezone);
     } catch {
-      setError('Could not detect timezone, try again');
+      setQuery(previousQuery); // restore so form knows city isn't selected
+      setError('Timezone lookup failed — please try again');
     } finally {
       setIsLoading(false);
     }
