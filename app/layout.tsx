@@ -13,8 +13,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Astro iCal — Your Personal Astrology Calendar',
-  description: 'Generate a personalized Google Calendar subscription with your astrological transits, lunar phases, and planetary ingresses.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://cicatriz.digital'),
+  title: {
+    default: 'cicatriz.digital — Your natal chart in your calendar',
+    template: '%s · cicatriz.digital',
+  },
+  description: 'Personalized astrological transits, lunar phases, and planetary ingresses delivered directly to Google Calendar. Based on your natal chart. No account needed.',
+  keywords: ['astrology', 'natal chart', 'transits', 'google calendar', 'ical', 'horoscope', 'planetary transits'],
+  authors: [{ name: 'cicatriz.digital' }],
+  openGraph: {
+    type: 'website',
+    siteName: 'cicatriz.digital',
+    title: 'cicatriz.digital — Your natal chart in your calendar',
+    description: 'Personalized astrological transits delivered to Google Calendar. Based on your natal chart. No account needed.',
+    url: '/',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'cicatriz.digital' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'cicatriz.digital — Your natal chart in your calendar',
+    description: 'Personalized astrological transits delivered to Google Calendar. Based on your natal chart. No account needed.',
+    images: ['/opengraph-image'],
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: '/' },
 };
 
 export default function RootLayout({
@@ -27,15 +49,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body
-        className="min-h-full flex flex-col"
-        style={{
-          background:
-            "radial-gradient(ellipse at 20% 50%, rgba(99,57,189,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.1) 0%, transparent 50%), #0a0a1a",
-        }}
-      >
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

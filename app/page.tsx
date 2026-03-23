@@ -11,6 +11,21 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 w-full max-w-lg mx-auto px-4 py-8 space-y-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'cicatriz.digital',
+              url: 'https://cicatriz.digital',
+              description: 'Personalized astrological transits delivered to Google Calendar based on your natal chart.',
+              applicationCategory: 'LifestyleApplication',
+              operatingSystem: 'Web',
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            }),
+          }}
+        />
         <section className="space-y-3">
           <h1 className="text-2xl font-semibold tracking-tight text-stone-100">
             cicatriz.<span className="text-amber-500">digital</span>
