@@ -12,9 +12,6 @@
 - [ ] **Deterministic response caching** — The full 12-month transit computation runs on every request. Cache the rendered ICS in Vercel KV keyed on a hash of the token, TTL 12h. This is prerequisite to scaling. `[Performance]`
 
 ### UX
-- [ ] **webcal:// deep-link subscribe buttons** — Replace or augment the manual copy-paste flow with `webcal://` buttons for Apple Calendar and equivalent deep links for other clients. Single most impactful conversion improvement after the URL itself. `[Feature · Retention]`
-- [ ] **Event preview on result page** — Users receive a URL with no idea what's in it. Show the next 5 upcoming events (title + date) computed server-side. Makes the value tangible and reduces subscribe hesitation. `[UX · Retention]`
-- [ ] **Birth data confirmation card** — Result page shows no confirmation of what was captured. Show "Calendar for [Name] · [date] · [city]" so users can verify before subscribing, with an edit link back to the form. `[Trust · UX]`
 - [ ] **Platform-specific subscribe instructions** — Current steps cover only Google Calendar desktop. Apple Calendar accepts `webcal://` one-tap links. Google Calendar on mobile doesn't support URL subscription at all. Add tabbed instructions per client with a mobile caveat. `[UX]`
 - [ ] **Inline birth time warning** — The "Unknown" checkbox is easy to miss and the Moon-transit warning appears only on the result page. Surface the consequence ("Moon transits estimated") as inline help text next to the time field. `[UX]`
 - [ ] **Better city search result display** — Raw truncated `display_name` is ambiguous for common city names (Paris, Springfield, Santiago). Show two lines: city name + country/state in muted text below. `[UX]`
@@ -33,12 +30,17 @@
 - [ ] **HowTo and FAQ structured data** — Add `HowTo` schema to the result page subscribe steps and `FAQPage` schema to the /guide page to capture featured snippet real estate for "how to add astrology calendar to Google Calendar." `[SEO]`
 
 ### Growth & Monetization
-- [ ] **Funnel event tracking** — Vercel Analytics is enabled but only tracks pageviews. Add custom events (form submit, copy URL click) to see where users drop off in the form → result → subscribe funnel. `[Growth · Observability]`
-- [ ] **Trust signals for the privacy model** — "No account. No storage." is 10px stone-600 text — least visible element on the page. For a product collecting birth coordinates, the privacy architecture is genuinely differentiating. Give it prominent treatment with a plain-language explanation of how the token works. `[Trust · Growth]`
+- [ ] **Trust signals for the privacy model** — Promote "No account. No storage." to a prominent, plain-language explanation of how the stateless token works. `[Trust · Growth]` (moved up from Growth)
 - [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. Astrology engagement is extremely high in Brazil, Mexico, Argentina, and Spain. Localizing UI copy and metadata would unlock large, culturally aligned markets where the brand name already resonates. `[Growth]`
 - [ ] **Premium signed-URL tier** — One-time payment generates a signed token unlocking: 24-month window, additional bodies (Chiron, Nodes), richer event descriptions. No user database required — premium entitlement lives in the signed token. Preserves the no-account ethos. `[Monetization]`
 
 ## Done
+
+- [x] **Retrograde periods as multi-day calendar spans** — Retrograde station events now span from Rx date to direct date. Direct station remains a 1-hour point event. Window-end flush and orphaned direct station handled. 8 new tests.
+- [x] **webcal:// deep-link subscribe buttons** — "Add to Apple Calendar" (webcal://) and "Add to Google Calendar" (google.com/calendar/render?cid=) buttons added to result page above the copy input.
+- [x] **Event preview on result page** — Next 5 upcoming events computed server-side (3-month window), shown below confirmation card. Respects filters bitmask. Non-fatal try/catch.
+- [x] **Birth data confirmation card** — Shows name, date, time, city from token on result page. Includes edit link back to home.
+- [x] **Funnel event tracking** — `track('form_submit')` on form submit, `track('copy_url')` on copy, `track('webcal_click', {client})` on subscribe button clicks.
 
 - [x] **Transit interpretation copy** — 278-entry `lib/transitInterpretations.json` pre-generated via Claude Haiku (~$0.02). `lib/interpretations.ts` exports `getInterpretation(key)`. Injected at all push sites in `transits.ts`, `personalTransits.ts`, `ingresses.ts`, `lunarPhases.ts`. Zero runtime cost.
 - [x] **Per-category event filtering** — 5-bit bitmask (`f` field in token). Five filter checkboxes in `NatalChartForm` (outer transits, inner transits, lunar phases, ingresses, retrogrades). Backward-compatible: absent field = all enabled. `/api/ical` validates 0–31 range.
