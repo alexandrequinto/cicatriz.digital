@@ -5,11 +5,6 @@
 ## To Do
 
 ### Bugs
-- [ ] **Durable rate limiter** — In-memory `requestCounts` Map resets on every cold start. Replace with Vercel KV atomic increment with TTL, plus `Retry-After` and `X-RateLimit-*` headers. `[Security]`
-- [ ] **Sign the birth data token** — Any valid base64url JSON is accepted. Add HMAC-SHA256 signature using a server secret so forged/tampered tokens are rejected before computation. `[Security]`
-
-### Engineering
-- [ ] **Deterministic response caching** — The full 12-month transit computation runs on every request. Cache the rendered ICS in Vercel KV keyed on a hash of the token, TTL 12h. This is prerequisite to scaling. `[Performance]`
 
 ### UX
 - [ ] **Platform-specific subscribe instructions** — Current steps cover only Google Calendar desktop. Apple Calendar accepts `webcal://` one-tap links. Google Calendar on mobile doesn't support URL subscription at all. Add tabbed instructions per client with a mobile caveat. `[UX]`
@@ -57,6 +52,8 @@
 - [x] **Branding cleanup** — `package.json` name is `cicatriz-digital`; `calendarBuilder` prodId uses `cicatriz.digital`.
 - [x] **Memoize planet longitude calls** — Module-level `lonCache` Map in `ephemeris.ts` keyed on `planet:hourKey` eliminates redundant VSOP87 calls within a request.
 - [x] **Validate decoded birth data fields** — `/api/ical` validates date format, lat/lng ranges, time format, and timezone string before running any computation.
+- [x] **HMAC-SHA256 token signing** — `lib/tokenSigning.ts` (server-only) signs tokens with `HMAC_SECRET`. Result page re-signs unsigned client tokens. Legacy unsigned tokens accepted with warning. Fixes React hydration error #418 caused by crypto in client bundle.
+- [x] **Remove all storage** — Deleted Vercel Blob cache (`lib/blobCache.ts`) and in-memory IP rate limiter. Pure stateless compute: request in, ICS out, nothing persisted. Consistent with "Your data lives only in your URL."
 - [x] **Wrap computation in try/catch** — Top-level try/catch in `/api/ical` returns structured 500 JSON with logged context; timeout returns 503 + `Retry-After`.
 - [x] **Internal timeout guard** — 20s `Promise.race` deadline on the computation block; returns 503 if exceeded.
 - [x] **Structured logging and per-phase timing** — `/api/ical` logs `requestId`, event counts, per-phase durations, and errors as JSON to Vercel logs.
