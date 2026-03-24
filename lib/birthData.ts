@@ -1,10 +1,4 @@
-import { createHmac, timingSafeEqual } from 'crypto';
 import type { BirthData } from '@/types/astro';
-
-// HMAC_SECRET must be set in Vercel project settings (environment variables).
-// In production, unsigned tokens are still accepted for backward compatibility,
-// but new tokens will always be signed. If HMAC_SECRET is absent (local dev),
-// verification is skipped and a warning is logged.
 
 type Payload = {
   n: string;
@@ -32,66 +26,9 @@ function toBase64url(buf: Buffer): string {
 }
 
 /**
- * Signs a base64url payload string with HMAC-SHA256.
- * Returns `<payload>.<base64url_signature>`.
+ * Encodes birth data into a base64url token (unsigned).
+ * Signing is done server-side via lib/tokenSigning.ts — never client-side.
  */
-export function signToken(payload: string): string {
-  const secret = process.env.HMAC_SECRET;
-  if (!secret) {
-    // No secret available — return unsigned. This happens on the client (browser
-    // never has server env vars). Signing is done server-side in the result page.
-    return payload;
-  }
-  const sig = createHmac('sha256', secret).update(payload).digest();
-  return `${payload}.${toBase64url(sig)}`;
-}
-
-/**
- * Verifies a token (signed or legacy unsigned).
- * - Signed tokens (`payload.sig`): verifies the HMAC; throws if invalid.
- * - Legacy tokens (no dot): accepted silently, returns `legacy: true`.
- * - If HMAC_SECRET is absent: skips verification and returns `legacy: false`.
- *
- * Returns `{ payload, legacy }` where `payload` is the base64url-encoded JSON part.
- */
-export function verifyToken(token: string): { payload: string; legacy: boolean } {
-  const dotIndex = token.lastIndexOf('.');
-  if (dotIndex === -1) {
-    // Legacy unsigned token — accept forever (no user contact mechanism exists).
-    return { payload: token, legacy: true };
-  }
-
-  const payload = token.slice(0, dotIndex);
-  const receivedSig = token.slice(dotIndex + 1);
-
-  const secret = process.env.HMAC_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('[birthData] HMAC_SECRET env var is required in production');
-    }
-    console.warn('[birthData] HMAC_SECRET is not set — skipping token signature verification.');
-    return { payload, legacy: false };
-  }
-
-  const expectedSigBuf = createHmac('sha256', secret).update(payload).digest();
-  const expectedSig = toBase64url(expectedSigBuf);
-
-  // Use fully constant-time comparison: pad both buffers to the same length so
-  // timingSafeEqual always runs (no short-circuit on length mismatch).
-  const receivedBuf = Buffer.from(receivedSig);
-  const expectedBuf = Buffer.from(expectedSig);
-  const len = Math.max(receivedBuf.length, expectedBuf.length);
-  const a = Buffer.concat([receivedBuf, Buffer.alloc(len - receivedBuf.length)]);
-  const b = Buffer.concat([expectedBuf, Buffer.alloc(len - expectedBuf.length)]);
-  const valid = timingSafeEqual(a, b) && receivedBuf.length === expectedBuf.length;
-
-  if (!valid) {
-    throw new Error('Invalid token signature');
-  }
-
-  return { payload, legacy: false };
-}
-
 export function encodeBirthData(data: BirthData): string {
   const payload: Payload = {
     n: data.name,
@@ -106,13 +43,16 @@ export function encodeBirthData(data: BirthData): string {
   if (data.filters != null && data.filters !== ALL_FILTERS) {
     payload.f = data.filters;
   }
-  const base64url = toBase64url(Buffer.from(JSON.stringify(payload)));
-  return signToken(base64url);
+  return toBase64url(Buffer.from(JSON.stringify(payload)));
 }
 
-export function decodeBirthData(token: string): BirthData {
+/**
+ * Decodes a raw base64url payload into BirthData.
+ * Callers that need signature verification should call verifyToken (lib/tokenSigning.ts)
+ * first to extract the payload, then pass it here.
+ */
+export function decodeBirthData(payload: string): BirthData {
   try {
-    const { payload } = verifyToken(token);
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     const json = Buffer.from(base64, 'base64').toString('utf8');
     const p: Payload = JSON.parse(json);
@@ -124,10 +64,9 @@ export function decodeBirthData(token: string): BirthData {
       lng: p.o,
       tz: p.z,
       city: p.c,
-      filters: p.f, // undefined means all enabled
+      filters: p.f,
     };
-  } catch (err) {
-    // Re-throw with a consistent message so callers can catch uniformly.
+  } catch {
     throw new Error('Invalid token');
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createHash } from 'crypto';
 import { decodeBirthData } from '@/lib/birthData';
+import { verifyToken } from '@/lib/tokenSigning';
 import { getNatalPositions } from '@/lib/ephemeris';
 import { getOuterTransits } from '@/lib/transits';
 import { getPersonalTransits } from '@/lib/personalTransits';
@@ -42,8 +43,11 @@ export async function GET(request: NextRequest) {
   }
 
   let birth;
+  let legacy = false;
   try {
-    birth = decodeBirthData(data);
+    const { payload, legacy: isLegacy } = verifyToken(data);
+    legacy = isLegacy;
+    birth = decodeBirthData(payload);
   } catch {
     return new Response(
       JSON.stringify({ error: 'invalid_token', message: 'Token is invalid or has been tampered with.' }),
@@ -51,8 +55,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Log a warning when a legacy unsigned token is used.
-  if (!data.includes('.')) {
+  if (legacy) {
     const requestId = Math.random().toString(36).slice(2, 9);
     console.warn(JSON.stringify({ requestId, warning: 'unsigned_legacy_token' }));
   }

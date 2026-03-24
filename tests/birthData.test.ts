@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { encodeBirthData, decodeBirthData, signToken, verifyToken } from '@/lib/birthData';
+import { describe, it, expect } from 'vitest';
+import { encodeBirthData, decodeBirthData } from '@/lib/birthData';
+import { signToken, verifyToken } from '@/lib/tokenSigning';
 
 const sample = {
   name: 'Sofia',
@@ -14,7 +15,7 @@ const sample = {
 describe('birthData', () => {
   it('round-trips birth data through encode/decode', () => {
     const token = encodeBirthData(sample);
-    const result = decodeBirthData(token);
+    const result = decodeBirthData(token); // unsigned payload goes directly to decode
     expect(result.name).toBe(sample.name);
     expect(result.date).toBe(sample.date);
     expect(result.time).toBe(sample.time);
