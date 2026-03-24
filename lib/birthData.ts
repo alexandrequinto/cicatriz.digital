@@ -38,7 +38,9 @@ function toBase64url(buf: Buffer): string {
 export function signToken(payload: string): string {
   const secret = process.env.HMAC_SECRET;
   if (!secret) {
-    // Dev convenience: if no secret is configured, return unsigned token.
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[birthData] HMAC_SECRET env var is required in production');
+    }
     console.warn('[birthData] HMAC_SECRET is not set — token will not be signed.');
     return payload;
   }
@@ -66,7 +68,9 @@ export function verifyToken(token: string): { payload: string; legacy: boolean }
 
   const secret = process.env.HMAC_SECRET;
   if (!secret) {
-    // Dev fallback: skip verification when secret is absent.
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[birthData] HMAC_SECRET env var is required in production');
+    }
     console.warn('[birthData] HMAC_SECRET is not set — skipping token signature verification.');
     return { payload, legacy: false };
   }
