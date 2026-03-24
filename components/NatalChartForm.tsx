@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { track } from '@vercel/analytics';
 import CitySearch from '@/components/CitySearch';
 import { encodeBirthData, FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
 
@@ -68,6 +69,7 @@ export default function NatalChartForm() {
         lat: lat!, lng: lng!, tz, city,
         filters,
       });
+      track('form_submit');
       router.push('/result?data=' + token);
     } catch {
       setIsSubmitting(false);

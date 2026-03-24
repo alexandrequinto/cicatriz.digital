@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { track } from '@vercel/analytics';
 
 interface SubscribeUrlProps {
   subscribeUrl: string;
@@ -17,7 +18,11 @@ const steps = [
 export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) {
   const [copied, setCopied] = useState(false);
 
+  const webcalUrl = subscribeUrl.replace(/^https?:\/\//, 'webcal://');
+  const googleCalUrl = `https://www.google.com/calendar/render?cid=${encodeURIComponent(webcalUrl)}`;
+
   const handleCopy = async () => {
+    track('copy_url');
     try {
       await navigator.clipboard.writeText(subscribeUrl);
       setCopied(true);
@@ -30,6 +35,29 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
 
   return (
     <div className="space-y-6">
+      {/* Subscribe buttons */}
+      <div className="border border-white/15 p-4 space-y-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Add to calendar</p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <a
+            href={webcalUrl}
+            onClick={() => track('webcal_click', { client: 'apple' })}
+            className="flex-1 bg-black border border-white text-white text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-1 focus:ring-offset-black"
+          >
+            Apple Calendar
+          </a>
+          <a
+            href={googleCalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('webcal_click', { client: 'google' })}
+            className="flex-1 bg-black border border-white text-white text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-1 focus:ring-offset-black"
+          >
+            Google Calendar
+          </a>
+        </div>
+      </div>
+
       {/* URL block */}
       <div className="border border-white/15 p-4 space-y-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
@@ -52,13 +80,13 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
         </div>
 
         <p className="text-[10px] text-white/20 uppercase tracking-widest">
-          Google Calendar checks for updates periodically
+          Or copy URL for Outlook and other iCal apps
         </p>
       </div>
 
       {/* Instructions */}
       <div className="border border-white/10 p-4 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Add to Google Calendar</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Manual setup · Google Calendar</p>
         <ol className="space-y-2.5">
           {steps.map((step, i) => (
             <li key={i} className="flex items-start gap-3 text-xs text-white/50">
