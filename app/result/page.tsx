@@ -1,10 +1,19 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { decodeBirthData } from '@/lib/birthData';
+import { getPreviewEvents } from '@/lib/previewEvents';
 import SubscribeUrl from '@/components/SubscribeUrl';
 
 interface ResultPageProps {
   searchParams: Promise<{ data?: string }>;
+}
+
+function formatPreviewDate(date: Date): string {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function truncateCity(city: string, maxLen = 40): string {
+  return city.length > maxLen ? city.slice(0, maxLen - 1) + '…' : city;
 }
 
 export default async function ResultPage({ searchParams }: ResultPageProps) {
@@ -44,6 +53,22 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   const subscribeUrl = `${appUrl}/api/ical?data=${data}`;
 
+  // Compute preview events (server-side, no external calls)
+  let previewEvents: Awaited<ReturnType<typeof getPreviewEvents>> = [];
+  try {
+    previewEvents = getPreviewEvents(birthData);
+  } catch {
+    // Non-fatal — preview section simply won't render if computation fails
+  }
+
+  const birthDateFormatted = new Date(birthData.date + 'T12:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const timeLabel = birthData.time ?? 'birth time unknown';
+  const cityLabel = truncateCity(birthData.city);
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-8">
@@ -57,12 +82,50 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           </div>
         </div>
 
+        {/* Birth data confirmation card */}
+        <div className="border border-white/10 px-3 py-3 space-y-2">
+          <div className="flex items-baseline justify-between">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/35">Calendar for</p>
+            <Link
+              href="/"
+              className="text-[10px] uppercase tracking-[0.15em] text-white/30 hover:text-white/60 transition-colors"
+            >
+              ← edit
+            </Link>
+          </div>
+          <div>
+            <p className="text-xs text-white/70 font-mono">{birthData.name}</p>
+            <p className="text-[10px] text-white/50 font-mono mt-0.5">
+              {birthDateFormatted} · {timeLabel} · {cityLabel}
+            </p>
+          </div>
+        </div>
+
         {noTime && (
           <div role="note" className="border border-white/10 px-3 py-2.5 flex gap-3">
             <span className="text-white/30 text-sm shrink-0" aria-hidden="true">☽</span>
             <p className="text-[10px] text-white/30 uppercase tracking-[0.12em] leading-relaxed">
               No birth time — Moon transits estimated using solar noon
             </p>
+          </div>
+        )}
+
+        {/* Upcoming events preview */}
+        {previewEvents.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/35">Upcoming</p>
+            <div className="border border-white/10 divide-y divide-white/8">
+              {previewEvents.map((event, i) => (
+                <div key={i} className="flex items-baseline gap-3 px-3 py-2">
+                  <span className="text-[10px] text-white/50 font-mono shrink-0 w-10">
+                    {formatPreviewDate(event.startDate)}
+                  </span>
+                  <span className="text-[10px] text-white/70 font-mono leading-snug">
+                    {event.title}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
