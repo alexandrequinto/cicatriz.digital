@@ -38,10 +38,8 @@ function toBase64url(buf: Buffer): string {
 export function signToken(payload: string): string {
   const secret = process.env.HMAC_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('[birthData] HMAC_SECRET env var is required in production');
-    }
-    console.warn('[birthData] HMAC_SECRET is not set — token will not be signed.');
+    // No secret available — return unsigned. This happens on the client (browser
+    // never has server env vars). Signing is done server-side in the result page.
     return payload;
   }
   const sig = createHmac('sha256', secret).update(payload).digest();

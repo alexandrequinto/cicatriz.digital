@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
-import { decodeBirthData } from '@/lib/birthData';
+import { decodeBirthData, encodeBirthData } from '@/lib/birthData';
 import { getPreviewEvents } from '@/lib/previewEvents';
 import SubscribeUrl from '@/components/SubscribeUrl';
 
@@ -56,7 +56,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     );
   }
 
-  const subscribeUrl = `${appUrl}/api/ical?data=${data}`;
+  // Re-encode server-side so the subscribe URL always carries a signed token,
+  // even when the client submitted an unsigned one (HMAC_SECRET not in browser).
+  const signedData = encodeBirthData(birthData);
+  const subscribeUrl = `${appUrl}/api/ical?data=${signedData}`;
 
   // Compute preview events (server-side, no external calls)
   let previewEvents: Awaited<ReturnType<typeof getPreviewEvents>> = [];
