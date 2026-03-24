@@ -34,6 +34,8 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
     // After a sign ingress, the next retrograde check's prevDelta would span the sign
     // boundary producing a corrupt delta. Skip detection for one step after any ingress.
     let skipNextRetrogradeCheck = false;
+    // Pending retrograde: saved when station Rx is detected; closed (pushed) when station direct arrives.
+    let pendingRetrograde: { startMs: number; title: string; description: string } | null = null;
 
     while (cursorMs <= windowEnd.getTime()) {
       cursorMs += step;
@@ -67,17 +69,27 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
         const normCurr = currDelta > 180 ? currDelta - 360 : currDelta < -180 ? currDelta + 360 : currDelta;
 
         if (normPrev > 0 && normCurr < 0) {
+          // Station retrograde — save start date; event is pushed when direct station is found
           const rxMech = `${planet} stations retrograde — begins apparent backward motion`;
           const rxInterp = getInterpretation(`${planet}|retrograde`);
-          events.push({
+          pendingRetrograde = {
+            startMs: cursorMs,
             title: `${planet} Retrograde ℞`,
             description: rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech,
-            startDate: cursor,
-            endDate: new Date(cursorMs + ONE_HOUR),
-            exactDate: cursor,
-            category: 'retrograde',
-          });
+          };
         } else if (normPrev < 0 && normCurr > 0) {
+          // Station direct — close the pending retrograde span
+          if (pendingRetrograde) {
+            events.push({
+              title: pendingRetrograde.title,
+              description: pendingRetrograde.description,
+              startDate: new Date(pendingRetrograde.startMs),
+              endDate: cursor,
+              exactDate: new Date(pendingRetrograde.startMs),
+              category: 'retrograde',
+            });
+            pendingRetrograde = null;
+          }
           const dMech = `${planet} stations direct — resumes forward motion`;
           const dInterp = getInterpretation(`${planet}|direct`);
           events.push({
@@ -94,6 +106,18 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
       }
 
       prevLon = lon;
+    }
+
+    // Window ends during a retrograde — push the open span up to windowEnd
+    if (pendingRetrograde) {
+      events.push({
+        title: pendingRetrograde.title,
+        description: pendingRetrograde.description,
+        startDate: new Date(pendingRetrograde.startMs),
+        endDate: windowEnd,
+        exactDate: new Date(pendingRetrograde.startMs),
+        category: 'retrograde',
+      });
     }
   }
 
