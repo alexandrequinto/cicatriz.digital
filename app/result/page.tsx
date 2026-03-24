@@ -43,7 +43,12 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   } catch {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-5">
-        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">Invalid data. Please try again.</p>
+        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">
+          This calendar link appears to be damaged or expired.
+        </p>
+        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">
+          Re-enter your birth data to generate a new one, or go back to the result page if you saved it.
+        </p>
         <Link href="/" className="text-xs uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors">
           ← Cicatriz
         </Link>

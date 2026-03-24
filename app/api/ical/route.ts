@@ -43,7 +43,16 @@ export async function GET(request: NextRequest) {
   try {
     birth = decodeBirthData(data);
   } catch {
-    return new Response('Invalid data token', { status: 400 });
+    return new Response(
+      JSON.stringify({ error: 'invalid_token', message: 'Token is invalid or has been tampered with.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  // Log a warning when a legacy unsigned token is used.
+  if (!data.includes('.')) {
+    const requestId = Math.random().toString(36).slice(2, 9);
+    console.warn(JSON.stringify({ requestId, warning: 'unsigned_legacy_token' }));
   }
 
   // Validate decoded fields
