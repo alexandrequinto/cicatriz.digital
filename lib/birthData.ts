@@ -78,12 +78,14 @@ export function verifyToken(token: string): { payload: string; legacy: boolean }
   const expectedSigBuf = createHmac('sha256', secret).update(payload).digest();
   const expectedSig = toBase64url(expectedSigBuf);
 
-  // Use timing-safe comparison to prevent timing attacks.
+  // Use fully constant-time comparison: pad both buffers to the same length so
+  // timingSafeEqual always runs (no short-circuit on length mismatch).
   const receivedBuf = Buffer.from(receivedSig);
   const expectedBuf = Buffer.from(expectedSig);
-  const valid =
-    receivedBuf.length === expectedBuf.length &&
-    timingSafeEqual(receivedBuf, expectedBuf);
+  const len = Math.max(receivedBuf.length, expectedBuf.length);
+  const a = Buffer.concat([receivedBuf, Buffer.alloc(len - receivedBuf.length)]);
+  const b = Buffer.concat([expectedBuf, Buffer.alloc(len - expectedBuf.length)]);
+  const valid = timingSafeEqual(a, b) && receivedBuf.length === expectedBuf.length;
 
   if (!valid) {
     throw new Error('Invalid token signature');
