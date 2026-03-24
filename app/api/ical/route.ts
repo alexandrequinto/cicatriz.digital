@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { createHash } from 'crypto';
 import { decodeBirthData } from '@/lib/birthData';
 import { getNatalPositions } from '@/lib/ephemeris';
 import { getOuterTransits } from '@/lib/transits';
@@ -7,6 +8,7 @@ import { getLunarPhaseEvents } from '@/lib/lunarPhases';
 import { getIngressAndRetrogradeEvents } from '@/lib/ingresses';
 import { buildCalendar } from '@/lib/calendarBuilder';
 import { FILTER_BITS } from '@/lib/birthData';
+import { getCachedIcs, setCachedIcs } from '@/lib/blobCache';
 
 // Use Node.js runtime (NOT edge) — astronomy-engine needs full Node.js
 export const runtime = 'nodejs';
@@ -88,8 +90,27 @@ export async function GET(request: NextRequest) {
     return new Response('Unknown timezone', { status: 400 });
   }
 
+  const tokenHash = createHash('sha1').update(data).digest('hex');
   const requestId = Math.random().toString(36).slice(2, 9);
   const t0 = Date.now();
+
+  // Cache check — silent fallthrough on any error
+  const cached = await getCachedIcs(tokenHash);
+  if (cached) {
+    console.log(JSON.stringify({ requestId, event: 'cache_hit' }));
+    const safeName = birth.name.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
+    return new Response(cached, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/calendar; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${safeName}-astro.ics"`,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+      },
+    });
+  }
+  console.log(JSON.stringify({ requestId, event: 'cache_miss' }));
+
   let icsContent: string;
 
   try {
@@ -127,6 +148,9 @@ export async function GET(request: NextRequest) {
 
     const calendar = buildCalendar(birth, filteredEvents, data);
     icsContent = calendar.toString();
+
+    // Best-effort cache write (non-blocking)
+    setCachedIcs(tokenHash, icsContent).catch(() => {});
 
     console.log(JSON.stringify({
       requestId,
