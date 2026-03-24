@@ -12,29 +12,7 @@ import { FILTER_BITS } from '@/lib/birthData';
 // Use Node.js runtime (NOT edge) — astronomy-engine needs full Node.js
 export const runtime = 'nodejs';
 
-// Rate limiting: simple in-memory (resets on cold start, good enough for serverless)
-const requestCounts = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 60; // requests per hour per IP
-const RATE_WINDOW = 60 * 60 * 1000; // 1 hour in ms
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const record = requestCounts.get(ip);
-  if (!record || now > record.resetAt) {
-    requestCounts.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return false;
-  }
-  record.count++;
-  return record.count > RATE_LIMIT;
-}
-
 export async function GET(request: NextRequest) {
-  // Rate limiting
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  if (isRateLimited(ip)) {
-    return new Response('Too Many Requests', { status: 429 });
-  }
-
   const data = request.nextUrl.searchParams.get('data');
   if (!data || data.length > 2000) {
     return new Response('Missing or invalid data parameter', { status: 400 });
