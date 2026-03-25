@@ -50,19 +50,30 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
               exactDate = new Date(cursor);
             }
           } else if (inWindow) {
-            const egressDate = new Date(cursorMs);
             if (ingressDate && exactDate) {
               const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
+              const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
               const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
               const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
+              const description = interp ? `${mech}\n\n${interp}` : mech;
               events.push({
-                title: `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`,
-                description: interp ? `${mech}\n\n${interp}` : mech,
+                title: `${base} — begins`,
+                description,
                 startDate: ingressDate,
-                endDate: egressDate,
-                exactDate,
+                endDate: ingressDate,
+                exactDate: ingressDate,
                 category: 'inner-transit',
               });
+              if (exactDate.getTime() !== ingressDate.getTime()) {
+                events.push({
+                  title: `${base} — exact`,
+                  description,
+                  startDate: exactDate,
+                  endDate: exactDate,
+                  exactDate,
+                  category: 'inner-transit',
+                });
+              }
             }
             inWindow = false;
             ingressDate = null;
@@ -76,16 +87,28 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
         // After the while loop, flush any open window
         if (inWindow && ingressDate && exactDate) {
           const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
+          const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
           const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
           const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
+          const description = interp ? `${mech}\n\n${interp}` : mech;
           events.push({
-            title: `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`,
-            description: interp ? `${mech}\n\n${interp}` : mech,
+            title: `${base} — begins`,
+            description,
             startDate: ingressDate,
-            endDate: new Date(windowEnd.getTime()),
-            exactDate,
+            endDate: ingressDate,
+            exactDate: ingressDate,
             category: 'inner-transit',
           });
+          if (exactDate.getTime() !== ingressDate.getTime()) {
+            events.push({
+              title: `${base} — exact`,
+              description,
+              startDate: exactDate,
+              endDate: exactDate,
+              exactDate,
+              category: 'inner-transit',
+            });
+          }
         }
       }
     }

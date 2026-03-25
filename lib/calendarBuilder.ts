@@ -16,7 +16,7 @@ export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHas
     { key: 'X-WR-CALDESC', value: `Personalized transits for ${birth.name}` },
   ]);
 
-  const allDayCategories = new Set<TransitEvent['category']>(['lunar', 'ingress', 'retrograde']);
+  const allDayCategories = new Set<TransitEvent['category']>(['outer-transit', 'inner-transit', 'lunar', 'ingress', 'retrograde']);
 
   for (const event of events) {
     const isAllDay = allDayCategories.has(event.category);

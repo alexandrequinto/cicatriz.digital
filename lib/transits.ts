@@ -58,14 +58,23 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
             }
           } else if (inWindow) {
             if (ingressDate && exactDate && windowStartDate) {
-              const egressDate = new Date(cursor);
+              const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
               const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
               const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
+              const description = interp ? `${mech}\n\n${interp}` : mech;
               events.push({
-                title: `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim(),
-                description: interp ? `${mech}\n\n${interp}` : mech,
+                title: `${base} — begins`,
+                description,
                 startDate: ingressDate,
-                endDate: egressDate,
+                endDate: ingressDate,
+                exactDate: ingressDate,
+                category: 'outer-transit',
+              });
+              events.push({
+                title: `${base} — exact`,
+                description,
+                startDate: exactDate,
+                endDate: exactDate,
                 exactDate,
                 category: 'outer-transit',
               });
@@ -81,16 +90,28 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
         }
 
         if (inWindow && ingressDate && exactDate) {
+          const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
           const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
           const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
+          const description = interp ? `${mech}\n\n${interp}` : mech;
           events.push({
-            title: `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim(),
-            description: interp ? `${mech}\n\n${interp}` : mech,
+            title: `${base} — begins`,
+            description,
             startDate: ingressDate,
-            endDate: windowEnd,
-            exactDate,
+            endDate: ingressDate,
+            exactDate: ingressDate,
             category: 'outer-transit',
           });
+          if (exactDate.getTime() !== ingressDate.getTime()) {
+            events.push({
+              title: `${base} — exact`,
+              description,
+              startDate: exactDate,
+              endDate: exactDate,
+              exactDate,
+              category: 'outer-transit',
+            });
+          }
         }
       }
     }
