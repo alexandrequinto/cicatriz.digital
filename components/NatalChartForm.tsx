@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { track } from '@vercel/analytics';
 import CitySearch from '@/components/CitySearch';
-import { encodeBirthData, FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
+import { FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
 
 interface FormErrors {
   name?: string;
@@ -36,6 +36,7 @@ export default function NatalChartForm() {
   const [tz, setTz] = useState('');
   const [filters, setFilters] = useState(ALL_FILTERS);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
@@ -62,16 +63,27 @@ export default function NatalChartForm() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      const token = encodeBirthData({
-        name: name.trim(), date,
-        time: unknownTime || !time ? null : time,
-        lat: lat!, lng: lng!, tz, city,
-        filters,
+      const res = await fetch('/api/encode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(), date,
+          time: unknownTime || !time ? null : time,
+          lat, lng, tz, city, filters,
+        }),
       });
+      if (!res.ok) {
+        setSubmitError('Something went wrong. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+      const { token } = await res.json();
       track('form_submit');
       router.push('/result?data=' + token);
     } catch {
+      setSubmitError('Network error. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -169,6 +181,10 @@ export default function NatalChartForm() {
           </p>
         )}
       </div>
+
+      {submitError && (
+        <p role="alert" className="text-[10px] text-foreground/50 uppercase tracking-widest">{submitError}</p>
+      )}
 
       <button
         type="submit" disabled={isSubmitting}

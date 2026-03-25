@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
+import { createHash } from 'crypto';
 import { decodeBirthData } from '@/lib/birthData';
 import { verifyToken } from '@/lib/tokenSigning';
+import { decryptToken, isEncryptedToken } from '@/lib/encryption';
 import { getNatalPositions } from '@/lib/ephemeris';
 import { getOuterTransits } from '@/lib/transits';
 import { getPersonalTransits } from '@/lib/personalTransits';
@@ -21,9 +23,14 @@ export async function GET(request: NextRequest) {
   let birth;
   let legacy = false;
   try {
-    const { payload, legacy: isLegacy } = verifyToken(data);
-    legacy = isLegacy;
-    birth = decodeBirthData(payload);
+    if (isEncryptedToken(data)) {
+      const payload = decryptToken(data);
+      birth = decodeBirthData(payload);
+    } else {
+      const { payload, legacy: isLegacy } = verifyToken(data);
+      legacy = isLegacy;
+      birth = decodeBirthData(payload);
+    }
   } catch {
     return new Response(
       JSON.stringify({ error: 'invalid_token', message: 'Token is invalid or has been tampered with.' }),
@@ -107,7 +114,12 @@ export async function GET(request: NextRequest) {
 
     filteredEvents.sort((a, b) => a.exactDate.getTime() - b.exactDate.getTime());
 
-    const calendar = buildCalendar(birth, filteredEvents, data);
+    // Derive a stable hash from birth data fields so event UIDs don't change
+    // when the same birth data is re-encrypted with a new random IV.
+    const tokenHash = createHash('sha256')
+      .update(`${birth.name}|${birth.date}|${birth.lat}|${birth.lng}|${birth.tz}`)
+      .digest('hex');
+    const calendar = buildCalendar(birth, filteredEvents, tokenHash);
     icsContent = calendar.toString();
 
     console.log(JSON.stringify({
