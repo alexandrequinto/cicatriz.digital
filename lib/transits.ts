@@ -2,6 +2,7 @@ import type { NatalPlanet, TransitEvent } from '@/types/astro';
 import { getPlanetLongitude, type PlanetName } from './ephemeris';
 import { ASPECTS, angularDifference, PLANET_ORB } from './aspects';
 import { getInterpretation } from './interpretations';
+import { getCalStrings } from './i18n/calendarStrings';
 
 const OUTER_PLANETS: PlanetName[] = ['Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 const NATAL_TARGETS: string[] = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars'];
@@ -13,13 +14,12 @@ const PLANET_SYMBOLS: Record<string, string> = {
   Jupiter: '♃', Saturn: '♄', Uranus: '♅', Neptune: '♆', Pluto: '♇',
 };
 
-const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-
-function getSign(lon: number): string {
-  return SIGN_NAMES[Math.floor(((lon % 360) + 360) % 360 / 30)];
+function getSign(lon: number, signs: string[]): string {
+  return signs[Math.floor(((lon % 360) + 360) % 360 / 30)];
 }
 
-export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, windowMonths: number): TransitEvent[] {
+export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, windowMonths: number, locale?: string): TransitEvent[] {
+  const strings = getCalStrings(locale);
   const events: TransitEvent[] = [];
   const windowEnd = new Date(windowStart);
   windowEnd.setMonth(windowEnd.getMonth() + windowMonths);
@@ -58,10 +58,13 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
             }
           } else if (inWindow) {
             if (ingressDate && exactDate && windowStartDate) {
-              const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
-              const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
-              const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
-              const description = `Outer Planet Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
+              const transitPlanetName = strings.planets[transitPlanet] ?? transitPlanet;
+              const natalTargetName = strings.planets[natalTarget] ?? natalTarget;
+              const aspectName = strings.aspects[aspect.name] ?? aspect.name;
+              const base = `${transitPlanetName} ${aspect.symbol} natal ${natalTargetName} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
+              const mech = `${transitPlanetName} ${aspectName} your natal ${natalTargetName} in ${getSign(natalPlanet.longitude, strings.signs)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
+              const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`, locale);
+              const description = `${strings.categoryLabels['outer-transit']}\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
               events.push({
                 title: `${base} — begins`,
                 description,
@@ -90,10 +93,13 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
         }
 
         if (inWindow && ingressDate && exactDate) {
-          const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
-          const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
-          const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
-          const description = `Outer Planet Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
+          const transitPlanetName = strings.planets[transitPlanet] ?? transitPlanet;
+          const natalTargetName = strings.planets[natalTarget] ?? natalTarget;
+          const aspectName = strings.aspects[aspect.name] ?? aspect.name;
+          const base = `${transitPlanetName} ${aspect.symbol} natal ${natalTargetName} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
+          const mech = `${transitPlanetName} ${aspectName} your natal ${natalTargetName} in ${getSign(natalPlanet.longitude, strings.signs)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
+          const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`, locale);
+          const description = `${strings.categoryLabels['outer-transit']}\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
           events.push({
             title: `${base} — begins`,
             description,

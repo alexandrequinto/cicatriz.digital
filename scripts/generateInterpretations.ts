@@ -10,7 +10,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const OUT_PATH = resolve(process.cwd(), 'lib/transitInterpretations.json');
+const localeArgIdx = process.argv.indexOf('--locale');
+const targetLocale = localeArgIdx >= 0 ? process.argv[localeArgIdx + 1] : 'en';
+
+const OUT_PATH = targetLocale !== 'en'
+  ? resolve(process.cwd(), `lib/transitInterpretations.${targetLocale}.json`)
+  : resolve(process.cwd(), 'lib/transitInterpretations.json');
 
 // ── Combination definitions ────────────────────────────────────────────────
 
@@ -76,7 +81,11 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 // ── Generation ─────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are writing concise astrological transit interpretations for a personal calendar app called cicatriz.digital.
+const LOCALE_INSTRUCTIONS: Record<string, string> = {
+  'pt-BR': 'Write all interpretations in Brazilian Portuguese (pt-BR). Do not translate from English — write them natively as an astrologer would speak to a Brazilian audience. Keep technical terms like planet and sign names in Portuguese where conventional (e.g. Saturno, Áries, Mercúrio).',
+};
+
+const BASE_SYSTEM_PROMPT = `You are writing concise astrological transit interpretations for a personal calendar app called cicatriz.digital.
 
 Guidelines:
 - Write exactly 2–3 sentences per entry. No more, no less.
@@ -93,8 +102,14 @@ Guidelines:
 
 Return ONLY a valid JSON object where each provided key maps to its interpretation string. No markdown, no explanation, no surrounding text — just the raw JSON object.`;
 
+const localeInstruction = LOCALE_INSTRUCTIONS[targetLocale];
+const SYSTEM_PROMPT = localeInstruction
+  ? `${BASE_SYSTEM_PROMPT}\n\n${localeInstruction}`
+  : BASE_SYSTEM_PROMPT;
+
 async function generateBatch(client: Anthropic, keys: string[]): Promise<Record<string, string>> {
-  const prompt = `Keys to interpret:\n${JSON.stringify(keys, null, 2)}`;
+  const localeNote = localeInstruction ? `\n\nRemember: ${localeInstruction}` : '';
+  const prompt = `Keys to interpret:\n${JSON.stringify(keys, null, 2)}${localeNote}`;
 
   const message = await client.messages.create({
     model: 'claude-haiku-4-5',

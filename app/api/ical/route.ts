@@ -95,11 +95,11 @@ export async function GET(request: NextRequest) {
 
     const [outerTransits, innerTransits, lunar, ingresses, eclipses] = await Promise.race([
       Promise.all([
-        Promise.resolve(getOuterTransits(natal, now, 12)),
-        Promise.resolve(getPersonalTransits(natal, now, 12)),
-        Promise.resolve(getLunarPhaseEvents(now, 12)),
-        Promise.resolve(getIngressAndRetrogradeEvents(now, 12)),
-        Promise.resolve(getEclipseEvents(now, 12)),
+        Promise.resolve(getOuterTransits(natal, now, 12, birth.locale)),
+        Promise.resolve(getPersonalTransits(natal, now, 12, birth.locale)),
+        Promise.resolve(getLunarPhaseEvents(now, 12, birth.locale)),
+        Promise.resolve(getIngressAndRetrogradeEvents(now, 12, birth.locale)),
+        Promise.resolve(getEclipseEvents(now, 12, birth.locale)),
       ]),
       timeoutPromise,
     ]) as [ReturnType<typeof getOuterTransits>, ReturnType<typeof getPersonalTransits>, ReturnType<typeof getLunarPhaseEvents>, ReturnType<typeof getIngressAndRetrogradeEvents>, ReturnType<typeof getEclipseEvents>];

@@ -1,19 +1,27 @@
 import ical, { ICalEventTransparency } from 'ical-generator';
 import { createHash } from 'node:crypto';
 import type { BirthData, TransitEvent } from '@/types/astro';
+import { getCalStrings } from './i18n/calendarStrings';
 
 export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHash: string) {
+  const strings = getCalStrings(birth.locale);
+  const calName = strings.calendarNameTemplate.replace('{name}', birth.name);
+  const calDesc = strings.calendarDescTemplate
+    .replace('{name}', birth.name)
+    .replace('{date}', birth.date)
+    .replace('{city}', birth.city);
+
   const cal = ical({
-    name: `${birth.name}'s Astrology`,
-    description: `Personalized transits for ${birth.name}, born ${birth.date} in ${birth.city}`,
+    name: calName,
+    description: calDesc,
     timezone: birth.tz,
     prodId: { company: 'cicatriz.digital', product: 'cicatriz', language: 'EN' },
   });
 
   cal.x([
     { key: 'X-PUBLISHED-TTL', value: 'PT6H' },
-    { key: 'X-WR-CALNAME', value: `${birth.name}'s Astrology` },
-    { key: 'X-WR-CALDESC', value: `Personalized transits for ${birth.name}` },
+    { key: 'X-WR-CALNAME', value: calName },
+    { key: 'X-WR-CALDESC', value: calDesc },
   ]);
 
   const allDayCategories = new Set<TransitEvent['category']>(['outer-transit', 'inner-transit', 'lunar', 'ingress', 'retrograde']);

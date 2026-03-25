@@ -2,6 +2,7 @@ import type { NatalPlanet, TransitEvent } from '@/types/astro';
 import { getPlanetLongitude, type PlanetName } from './ephemeris';
 import { angularDifference, PLANET_ORB } from './aspects';
 import { getInterpretation } from './interpretations';
+import { getCalStrings } from './i18n/calendarStrings';
 
 const INNER_PLANETS: PlanetName[] = ['Sun', 'Mercury', 'Venus', 'Mars'];
 const INNER_ASPECTS = [
@@ -9,13 +10,12 @@ const INNER_ASPECTS = [
   { name: 'opposition', angle: 180, symbol: '☍' },
 ] as const;
 
-const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-
-function getSign(lon: number): string {
-  return SIGN_NAMES[Math.floor(((lon % 360) + 360) % 360 / 30)];
+function getSign(lon: number, signs: string[]): string {
+  return signs[Math.floor(((lon % 360) + 360) % 360 / 30)];
 }
 
-export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, windowMonths: number): TransitEvent[] {
+export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, windowMonths: number, locale?: string): TransitEvent[] {
+  const strings = getCalStrings(locale);
   const events: TransitEvent[] = [];
   const windowEnd = new Date(windowStart);
   windowEnd.setMonth(windowEnd.getMonth() + windowMonths);
@@ -51,11 +51,14 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
             }
           } else if (inWindow) {
             if (ingressDate && exactDate) {
+              const transitPlanetName = strings.planets[transitPlanet] ?? transitPlanet;
+              const natalPlanetName = strings.planets[natalPlanet.name] ?? natalPlanet.name;
+              const aspectName = strings.aspects[aspect.name] ?? aspect.name;
               const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
-              const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
-              const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
-              const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
-              const description = `Personal Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
+              const base = `${transitPlanetName} ${aspect.symbol} natal ${natalPlanetName}${approxSuffix}`;
+              const mech = `${transitPlanetName} ${aspectName} your natal ${natalPlanetName} in ${getSign(natalPlanet.longitude, strings.signs)}.`;
+              const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`, locale);
+              const description = `${strings.categoryLabels['inner-transit']}\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
               events.push({
                 title: `${base} — begins`,
                 description,
@@ -86,11 +89,14 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
 
         // After the while loop, flush any open window
         if (inWindow && ingressDate && exactDate) {
+          const transitPlanetName = strings.planets[transitPlanet] ?? transitPlanet;
+          const natalPlanetName = strings.planets[natalPlanet.name] ?? natalPlanet.name;
+          const aspectName = strings.aspects[aspect.name] ?? aspect.name;
           const approxSuffix = natalPlanet.name === 'Moon' ? ' (approx)' : '';
-          const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
-          const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
-          const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
-          const description = `Personal Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
+          const base = `${transitPlanetName} ${aspect.symbol} natal ${natalPlanetName}${approxSuffix}`;
+          const mech = `${transitPlanetName} ${aspectName} your natal ${natalPlanetName} in ${getSign(natalPlanet.longitude, strings.signs)}.`;
+          const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`, locale);
+          const description = `${strings.categoryLabels['inner-transit']}\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
           events.push({
             title: `${base} — begins`,
             description,

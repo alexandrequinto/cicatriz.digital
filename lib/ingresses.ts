@@ -1,14 +1,28 @@
 import { getPlanetLongitude, type PlanetName } from './ephemeris';
 import type { TransitEvent } from '@/types/astro';
 import { getInterpretation } from './interpretations';
+import { getCalStrings } from './i18n/calendarStrings';
 
 const INGRESS_PLANETS: PlanetName[] = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
 const RETROGRADE_PLANETS: PlanetName[] = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
-const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+
+// English phase keys used for interpretation lookup and getLunarPhase return values
+const EN_MOON_INGRESS_PHASES = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
+
 const ONE_HOUR = 60 * 60 * 1000;
 const ONE_DAY = 24 * ONE_HOUR;
 
-function getLunarPhase(date: Date): string {
+const PLANET_SYMBOLS: Record<string, string> = {
+  Sun: '☀', Moon: '☽', Mercury: '☿', Venus: '♀', Mars: '♂',
+  Jupiter: '♃', Saturn: '♄',
+};
+
+function getSignIndex(lon: number): number {
+  return Math.floor(((lon % 360) + 360) % 360 / 30);
+}
+
+// Returns English phase key for use as interpretation key and index lookup
+function getLunarPhaseKey(date: Date): string {
   const moonLon = getPlanetLongitude('Moon', date);
   const sunLon = getPlanetLongitude('Sun', date);
   const elongation = ((moonLon - sunLon) % 360 + 360) % 360;
@@ -22,20 +36,8 @@ function getLunarPhase(date: Date): string {
   return 'Waning Crescent';
 }
 
-const PLANET_SYMBOLS: Record<string, string> = {
-  Sun: '☀', Moon: '☽', Mercury: '☿', Venus: '♀', Mars: '♂',
-  Jupiter: '♃', Saturn: '♄',
-};
-
-function getSign(lon: number): string {
-  return SIGN_NAMES[Math.floor(((lon % 360) + 360) % 360 / 30)];
-}
-
-function getSignIndex(lon: number): number {
-  return Math.floor(((lon % 360) + 360) % 360 / 30);
-}
-
-export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: number): TransitEvent[] {
+export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: number, locale?: string): TransitEvent[] {
+  const strings = getCalStrings(locale);
   const events: TransitEvent[] = [];
   const windowEnd = new Date(windowStart);
   windowEnd.setMonth(windowEnd.getMonth() + windowMonths);
@@ -59,22 +61,28 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
 
       const hadIngress = sign !== prevSign;
       if (hadIngress) {
-        const signName = SIGN_NAMES[sign];
+        const signName = strings.signs[sign];
         const sym = PLANET_SYMBOLS[planet] ?? '';
         const isMoon = planet === 'Moon';
-        const phase = isMoon ? getLunarPhase(cursor) : null;
+        const phaseKey = isMoon ? getLunarPhaseKey(cursor) : null;
+        // Translate the phase name using the locale strings
+        const phaseNameLocalized = phaseKey
+          ? (strings.moonIngressPhases[EN_MOON_INGRESS_PHASES.indexOf(phaseKey)] ?? phaseKey)
+          : null;
+
+        const planetName = strings.planets[planet] ?? planet;
         const ingressMech = isMoon
-          ? `Moon enters ${signName} · ${phase}`
-          : `${planet} enters ${signName}`;
+          ? `${planetName} ${strings.enters} ${signName} · ${phaseNameLocalized}`
+          : `${planetName} ${strings.enters} ${signName}`;
         const interpKey = isMoon
-          ? `Moon|ingress|${signName}|${phase}`
-          : `${planet}|ingress|${signName}`;
-        const ingressInterp = getInterpretation(interpKey);
+          ? `Moon|ingress|${strings.signs.indexOf(signName) >= 0 ? /* use English sign for key */ ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][sign] : signName}|${phaseKey}`
+          : `${planet}|ingress|${'Aries,Taurus,Gemini,Cancer,Leo,Virgo,Libra,Scorpio,Sagittarius,Capricorn,Aquarius,Pisces'.split(',')[sign]}`;
+        const ingressInterp = getInterpretation(interpKey, locale);
         events.push({
           title: isMoon
-            ? `Moon ${sym} enters ${signName} · ${phase}`
-            : `${planet} ${sym} enters ${signName}`,
-          description: `Sign Ingress\n\n${ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech}`,
+            ? `${planetName} ${sym} ${strings.enters} ${signName} · ${phaseNameLocalized}`
+            : `${planetName} ${sym} ${strings.enters} ${signName}`,
+          description: `${strings.categoryLabels['ingress']}\n\n${ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech}`,
           startDate: cursor,
           endDate: new Date(cursorMs + ONE_HOUR),
           exactDate: cursor,
@@ -91,14 +99,16 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
         const normPrev = prevDelta > 180 ? prevDelta - 360 : prevDelta < -180 ? prevDelta + 360 : prevDelta;
         const normCurr = currDelta > 180 ? currDelta - 360 : currDelta < -180 ? currDelta + 360 : currDelta;
 
+        const planetName = strings.planets[planet] ?? planet;
+
         if (normPrev > 0 && normCurr < 0) {
           // Station retrograde — save start date; event is pushed when direct station is found
-          const rxMech = `${planet} stations retrograde — begins apparent backward motion`;
-          const rxInterp = getInterpretation(`${planet}|retrograde`);
+          const rxMech = `${planetName} ${strings.stationsRetrograde} — begins apparent backward motion`;
+          const rxInterp = getInterpretation(`${planet}|retrograde`, locale);
           pendingRetrograde = {
             startMs: cursorMs,
-            title: `${planet} Retrograde ℞`,
-            description: `Retrograde Station\n\n${rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech}`,
+            title: `${planetName} Retrograde ℞`,
+            description: `${strings.categoryLabels['retrograde']}\n\n${rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech}`,
           };
         } else if (normPrev < 0 && normCurr > 0) {
           // Station direct — close the pending retrograde span
@@ -113,11 +123,11 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
             });
             pendingRetrograde = null;
           }
-          const dMech = `${planet} stations direct — resumes forward motion`;
-          const dInterp = getInterpretation(`${planet}|direct`);
+          const dMech = `${planetName} ${strings.resumesDirect} — resumes forward motion`;
+          const dInterp = getInterpretation(`${planet}|direct`, locale);
           events.push({
-            title: `${planet} Direct ↻`,
-            description: `Retrograde Station\n\n${dInterp ? `${dMech}\n\n${dInterp}` : dMech}`,
+            title: `${planetName} Direct ↻`,
+            description: `${strings.categoryLabels['retrograde']}\n\n${dInterp ? `${dMech}\n\n${dInterp}` : dMech}`,
             startDate: cursor,
             endDate: new Date(cursorMs + ONE_HOUR),
             exactDate: cursor,
