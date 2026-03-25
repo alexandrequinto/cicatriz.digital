@@ -5,7 +5,6 @@
 ## To Do
 
 ### Content *(plan first)*
-- [ ] **FAQ page** — Covers: how the product works, what we do with your data (nothing — stateless token), are event descriptions personalized (no — pre-written per transit type), how descriptions are generated, how filters work, how calendar subscription works, how to interpret events. `[Content]`
 
 ### Growth *(plan first)*
 - [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. High astrology engagement in Brazil, Mexico, Argentina, Spain. Needs careful planning: copy, date formats, city search locale. `[Growth]`
@@ -38,6 +37,8 @@
 - [x] **Validate decoded birth data fields** — Date, lat/lng, time format, timezone validated before computation.
 - [x] **Internal timeout guard** — 20s `Promise.race` deadline; returns 503 on timeout.
 - [x] **Structured logging** — `requestId`, event counts, per-phase durations logged as JSON to Vercel.
-- [x] **Test suite with Vitest** — 34 tests across birthData, tokenSigning, ingresses, ephemeris.
+- [x] **Server-side AES-256-GCM encryption** — Birth data never in URLs as readable PII. Client POSTs to `/api/encode`; server returns opaque `enc.<base64url>` token. Legacy HMAC tokens accepted as fallback (existing subscriptions unbroken). Stable iCal UIDs derived from birth data fields, not token string. 47 tests.
+- [x] **FAQ page** — `/faq` with 14 questions across 4 sections: How it works, Your data & privacy, Event descriptions, Calendar subscription. Linked from footer.
+- [x] **Test suite with Vitest** — 47 tests across birthData, tokenSigning, ingresses, ephemeris, encryption.
 - [x] **Vercel Analytics** — `<Analytics />` in root layout.
 - [x] **Core app** — Next.js App Router, `astronomy-engine`, `ical-generator`, stateless base64url token, city autocomplete via Nominatim.

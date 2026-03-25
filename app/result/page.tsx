@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { decodeBirthData, encodeBirthData } from '@/lib/birthData';
-import { verifyToken, signToken } from '@/lib/tokenSigning';
+import { verifyToken } from '@/lib/tokenSigning';
+import { decryptToken, isEncryptedToken, encryptToken } from '@/lib/encryption';
 import { getPreviewEvents } from '@/lib/previewEvents';
 import SubscribeUrl from '@/components/SubscribeUrl';
 
@@ -38,9 +39,19 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   let birthData;
   let noTime = false;
+  let resolvedToken: string;
   try {
-    const { payload } = verifyToken(data);
-    birthData = decodeBirthData(payload);
+    if (isEncryptedToken(data)) {
+      // New path: opaque encrypted token
+      const payload = decryptToken(data);
+      birthData = decodeBirthData(payload);
+      resolvedToken = data; // already encrypted, use as-is
+    } else {
+      // Legacy path: HMAC-signed plaintext token — re-encrypt for the subscribe URL
+      const { payload } = verifyToken(data);
+      birthData = decodeBirthData(payload);
+      resolvedToken = encryptToken(encodeBirthData(birthData));
+    }
     noTime = !birthData.time;
   } catch {
     return (
@@ -58,10 +69,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     );
   }
 
-  // Re-encode and sign server-side so the subscribe URL always carries a signed
-  // token, even when the client submitted an unsigned one (no HMAC_SECRET in browser).
-  const signedData = signToken(encodeBirthData(birthData));
-  const subscribeUrl = `${appUrl}/api/ical?data=${signedData}`;
+  const subscribeUrl = `${appUrl}/api/ical?data=${resolvedToken}`;
 
   // Compute preview events (server-side, no external calls)
   let previewEvents: Awaited<ReturnType<typeof getPreviewEvents>> = [];
