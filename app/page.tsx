@@ -43,14 +43,11 @@ export default function Home() {
       </main>
 
       <footer className="px-5 py-5 border-t border-foreground/8 space-y-2">
-        <p className="text-[10px] text-foreground/25 uppercase tracking-widest text-center">
+        <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-center">
           No account · No storage · Your data lives only in your URL
         </p>
-        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center leading-relaxed">
-          Birth data is encoded in the URL — nothing is stored on any server · Calendar computed fresh on every request · No cookies · Delete the URL and your data is gone
-        </p>
-        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
-          <Link href="/faq" className="hover:text-foreground/50 transition-colors">How it works →</Link>
+        <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center">
+          <Link href="/faq" className="hover:text-foreground/60 transition-colors">How it works →</Link>
         </p>
       </footer>
     </div>
