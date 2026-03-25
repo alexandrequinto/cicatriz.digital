@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
+import { track } from '@vercel/analytics';
 
 const LOCALES = [
   { code: 'en',    flag: '🇬🇧', label: 'EN' },
@@ -16,6 +17,7 @@ export default function LocaleSwitcher() {
         <a
           key={code}
           href={`/${code}`}
+          onClick={() => track('locale_switch', { to: code, from: locale })}
           className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition-colors cursor-pointer ${
             locale === code
               ? 'text-foreground/60 pointer-events-none'
