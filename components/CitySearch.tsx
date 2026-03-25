@@ -7,6 +7,16 @@ interface NominatimResult {
   display_name: string;
   lat: string;
   lon: string;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    suburb?: string;
+    state?: string;
+    region?: string;
+    country?: string;
+  };
 }
 
 interface CitySearchProps {
@@ -116,14 +126,25 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
       {isOpen && results.length > 0 && (
         <ul role="listbox" className="absolute z-50 w-full mt-1 bg-black border border-white/20 shadow-xl overflow-hidden">
           {results.map((result, index) => {
-            const label = result.display_name.length > 60 ? result.display_name.slice(0, 60) + '…' : result.display_name;
+            const isActive = index === activeIndex;
+            const addr = result.address;
+            const primaryName = addr
+              ? (addr.city ?? addr.town ?? addr.village ?? addr.municipality ?? addr.suburb ?? result.display_name.split(',')[0].trim())
+              : result.display_name.split(',')[0].trim();
+            const secondaryParts = addr
+              ? [addr.state ?? addr.region, addr.country].filter((v): v is string => Boolean(v))
+              : [];
+            const secondary = secondaryParts.join(', ');
             return (
               <li
-                key={result.place_id} role="option" aria-selected={index === activeIndex}
+                key={result.place_id} role="option" aria-selected={isActive}
                 onMouseDown={() => handleSelect(result)} onMouseEnter={() => setActiveIndex(index)}
-                className={`px-3 py-2 cursor-pointer text-xs transition-colors ${index === activeIndex ? 'bg-white text-black' : 'text-white/60 hover:bg-white/8'}`}
+                className={`px-3 py-2.5 cursor-pointer text-xs transition-colors flex flex-col leading-tight ${isActive ? 'bg-white text-black' : 'text-white/60 hover:bg-white/8'}`}
               >
-                {label}
+                <span>{primaryName}</span>
+                {secondary && (
+                  <span className={isActive ? 'text-black/60' : 'text-white/40'}>{secondary}</span>
+                )}
               </li>
             );
           })}
