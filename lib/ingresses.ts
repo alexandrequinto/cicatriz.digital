@@ -8,6 +8,20 @@ const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libr
 const ONE_HOUR = 60 * 60 * 1000;
 const ONE_DAY = 24 * ONE_HOUR;
 
+function getLunarPhase(date: Date): string {
+  const moonLon = getPlanetLongitude('Moon', date);
+  const sunLon = getPlanetLongitude('Sun', date);
+  const elongation = ((moonLon - sunLon) % 360 + 360) % 360;
+  if (elongation < 22.5 || elongation >= 337.5) return 'New Moon';
+  if (elongation < 67.5)  return 'Waxing Crescent';
+  if (elongation < 112.5) return 'First Quarter';
+  if (elongation < 157.5) return 'Waxing Gibbous';
+  if (elongation < 202.5) return 'Full Moon';
+  if (elongation < 247.5) return 'Waning Gibbous';
+  if (elongation < 292.5) return 'Last Quarter';
+  return 'Waning Crescent';
+}
+
 const PLANET_SYMBOLS: Record<string, string> = {
   Sun: '☀', Moon: '☽', Mercury: '☿', Venus: '♀', Mars: '♂',
   Jupiter: '♃', Saturn: '♄',
@@ -47,10 +61,19 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
       if (hadIngress) {
         const signName = SIGN_NAMES[sign];
         const sym = PLANET_SYMBOLS[planet] ?? '';
-        const ingressMech = `${planet} enters ${signName}`;
-        const ingressInterp = getInterpretation(`${planet}|ingress|${signName}`);
+        const isMoon = planet === 'Moon';
+        const phase = isMoon ? getLunarPhase(cursor) : null;
+        const ingressMech = isMoon
+          ? `Moon enters ${signName} · ${phase}`
+          : `${planet} enters ${signName}`;
+        const interpKey = isMoon
+          ? `Moon|ingress|${signName}|${phase}`
+          : `${planet}|ingress|${signName}`;
+        const ingressInterp = getInterpretation(interpKey);
         events.push({
-          title: `${planet} ${sym} enters ${signName}`,
+          title: isMoon
+            ? `Moon ${sym} enters ${signName} · ${phase}`
+            : `${planet} ${sym} enters ${signName}`,
           description: `Sign Ingress\n\n${ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech}`,
           startDate: cursor,
           endDate: new Date(cursorMs + ONE_HOUR),
