@@ -4,7 +4,8 @@
     "description": "Enter your birth data. Get a live calendar subscription with your personal planetary transits, lunar phases, and retrograde stations.",
     "footerNoStorage": "No account · No storage · Your data lives only in your URL",
     "footerHowItWorks": "How it works →",
-    "footerFeedback": "Feedback →"
+    "footerFeedback": "Feedback →",
+    "footerPrivacy": "Privacy →"
   },
   "meta": {
     "title": "Cicatriz — Marked by the cosmos",
@@ -131,5 +132,22 @@
     "a15": "Generate a new calendar with the updated data and replace the subscription URL in your calendar app. Your old calendar will stop updating once you remove it.",
     "q16": "Why doesn't the calendar update instantly?",
     "a16": "Calendar apps control their own refresh schedule. Google Calendar typically syncs once every 24 hours regardless of what the server advertises. Apple Calendar is more responsive and usually syncs within a few hours."
+  },
+  "privacy": {
+    "pageTitle": "Privacy",
+    "pageDescription": "Cicatriz does not collect, store, or share your personal data. Your birth data lives only in your calendar URL.",
+    "title": "Privacy",
+    "s1Title": "The short version",
+    "s1p1": "Cicatriz does not collect, store, or share your personal data. We have no accounts, no database, and no analytics tied to individuals. Your birth data never touches our servers in a readable form.",
+    "s1p2": "If you close the result page and discard the URL, your data is gone. There is nothing to delete, no account to deactivate, and no email to unsubscribe from.",
+    "s2Title": "Your birth data",
+    "s2p1": "When you submit the form, your birth details (name, date, time, city, coordinates, timezone) are encrypted with AES-256-GCM on our server and returned to you as an opaque token embedded in your subscribe URL. We do not log or retain this data.",
+    "s2p2": "Each time your calendar app fetches the feed, the token is decrypted in memory, the calendar is computed, and the response is sent. Nothing is written to disk or stored between requests.",
+    "s2p3": "The subscribe URL is yours to control. Share it only with people you trust, since it encodes your birth details. Anyone with the URL can generate your calendar.",
+    "s3Title": "Third-party services",
+    "s3p1": "We use Vercel to host the application. Vercel may log standard HTTP request metadata (IP address, user agent, timestamp) as part of normal infrastructure operation. See vercel.com/legal/privacy-policy for details.",
+    "s3p2": "City search uses the Nominatim API (OpenStreetMap), which receives your typed city query. No birth data is sent to Nominatim. We also use Vercel Analytics to count aggregate page views and custom events (form submissions, calendar subscriptions). No personal identifiers are collected.",
+    "s4Title": "Contact",
+    "s4p1": "Questions about privacy? Write to feedback@cicatriz.digital."
   }
 }

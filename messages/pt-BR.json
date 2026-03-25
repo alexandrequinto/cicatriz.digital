@@ -4,7 +4,8 @@
     "description": "Insira seus dados de nascimento. Receba uma assinatura de calendário com seus trânsitos planetários pessoais, fases lunares e estações retrógradas.",
     "footerNoStorage": "Sem conta · Sem armazenamento · Seus dados vivem apenas na URL",
     "footerHowItWorks": "Como funciona →",
-    "footerFeedback": "Feedback →"
+    "footerFeedback": "Feedback →",
+    "footerPrivacy": "Privacidade →"
   },
   "meta": {
     "title": "Cicatriz — Marcado pelo cosmos",
@@ -131,5 +132,22 @@
     "a15": "Gere um novo calendário com os dados atualizados e substitua a URL de assinatura no seu app de calendário. Seu calendário antigo deixará de ser atualizado quando você o remover.",
     "q16": "Por que o calendário não atualiza instantaneamente?",
     "a16": "Os apps de calendário controlam seu próprio cronograma de atualização. O Google Calendar geralmente sincroniza uma vez a cada 24 horas, independentemente do que o servidor anuncia. O Apple Calendar é mais responsivo e geralmente sincroniza em algumas horas."
+  },
+  "privacy": {
+    "pageTitle": "Privacidade",
+    "pageDescription": "O Cicatriz não coleta, armazena nem compartilha seus dados pessoais. Seus dados de nascimento vivem apenas na URL do seu calendário.",
+    "title": "Privacidade",
+    "s1Title": "A versão curta",
+    "s1p1": "O Cicatriz não coleta, armazena nem compartilha seus dados pessoais. Não temos contas, banco de dados nem análises vinculadas a indivíduos. Seus dados de nascimento nunca chegam aos nossos servidores de forma legível.",
+    "s1p2": "Se você fechar a página de resultado e descartar a URL, seus dados desaparecem. Não há nada para excluir, nenhuma conta para desativar e nenhum e-mail para cancelar a assinatura.",
+    "s2Title": "Seus dados de nascimento",
+    "s2p1": "Quando você envia o formulário, seus dados de nascimento (nome, data, hora, cidade, coordenadas, fuso horário) são criptografados com AES-256-GCM no nosso servidor e devolvidos como um token opaco incorporado na sua URL de assinatura. Não registramos nem retemos esses dados.",
+    "s2p2": "Cada vez que seu app de calendário busca o feed, o token é descriptografado em memória, o calendário é calculado e a resposta é enviada. Nada é gravado em disco nem armazenado entre as requisições.",
+    "s2p3": "A URL de assinatura é sua para controlar. Compartilhe-a apenas com pessoas de confiança, pois ela codifica seus dados de nascimento. Qualquer pessoa com a URL pode gerar seu calendário.",
+    "s3Title": "Serviços de terceiros",
+    "s3p1": "Usamos a Vercel para hospedar a aplicação. A Vercel pode registrar metadados padrão de requisições HTTP (endereço IP, agente de usuário, data/hora) como parte da operação normal da infraestrutura. Veja vercel.com/legal/privacy-policy para detalhes.",
+    "s3p2": "A busca de cidades usa a API Nominatim (OpenStreetMap), que recebe a sua consulta de cidade digitada. Nenhum dado de nascimento é enviado ao Nominatim. Também usamos o Vercel Analytics para contar visualizações de página agregadas e eventos personalizados (envios de formulário, assinaturas de calendário). Nenhum identificador pessoal é coletado.",
+    "s4Title": "Contato",
+    "s4p1": "Dúvidas sobre privacidade? Escreva para feedback@cicatriz.digital."
   }
 }
