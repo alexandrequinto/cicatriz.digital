@@ -20,13 +20,13 @@ export default function LocaleSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-3 justify-end">
+    <div className="relative flex items-center gap-3 justify-end z-10">
       {LOCALES.map(({ code, flag, label }) => (
         <button
           key={code}
           type="button"
           onClick={() => switchTo(code)}
-          className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition-colors ${
+          className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition-colors cursor-pointer ${
             locale === code
               ? 'text-foreground/60'
               : 'text-foreground/20 hover:text-foreground/40'
