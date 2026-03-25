@@ -7,7 +7,7 @@
 ### Content *(plan first)*
 
 ### Growth *(plan first)*
-- [ ] **Send feedback** — Lightweight feedback mechanism. Needs design thinking: what channel (email, form, GitHub issues?), how to keep it stateless/private, when to surface it. `[Growth]`
+- [ ] **Support / additional languages** — es, nl, and others. Same pattern as pt-BR: extend generate script, add messages file. `[Growth]`
 - [ ] **Support / Buy Me a Coffee** — Community project. Needs design thinking: placement, copy tone, platform choice (Ko-fi, GitHub Sponsors, BMC). Should feel optional and aligned with the no-monetization ethos. `[Community]`
 
 ## Done
@@ -39,6 +39,8 @@
 - [x] **Internal timeout guard** — 20s `Promise.race` deadline; returns 503 on timeout.
 - [x] **Structured logging** — `requestId`, event counts, per-phase durations logged as JSON to Vercel.
 - [x] **Server-side AES-256-GCM encryption** — Birth data never in URLs as readable PII. Client POSTs to `/api/encode`; server returns opaque `enc.<base64url>` token. Legacy HMAC tokens accepted as fallback (existing subscriptions unbroken). Stable iCal UIDs derived from birth data fields, not token string. 47 tests.
+- [x] **Privacy page** — `/privacy` with EN + pt-BR content covering data handling, encryption, third-party services. Linked from footer alongside FAQ and Feedback.
+- [x] **Feedback mailto link** — `feedback@cicatriz.digital` in footer next to FAQ link.
 - [x] **pt-BR localization** — next-intl routing, 120 UI strings in EN + pt-BR, locale token in iCal feed, localized event titles, 407 native pt-BR interpretations generated. Locale switcher with flags in hero.
 - [x] **FAQ page** — `/faq` with 14 questions across 4 sections: How it works, Your data & privacy, Event descriptions, Calendar subscription. Linked from footer.
 - [x] **Test suite with Vitest** — 47 tests across birthData, tokenSigning, ingresses, ephemeris, encryption.
