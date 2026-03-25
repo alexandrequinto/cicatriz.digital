@@ -36,13 +36,13 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
   return (
     <div className="space-y-6">
       {/* Subscribe buttons */}
-      <div className="border border-white/15 p-4 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Add to calendar</p>
+      <div className="border border-foreground/15 p-4 space-y-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40">Add to calendar</p>
         <div className="flex flex-col sm:flex-row gap-2">
           <a
             href={webcalUrl}
             onClick={() => track('webcal_click', { client: 'apple' })}
-            className="flex-1 bg-black border border-white text-white text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-1 focus:ring-offset-black"
+            className="flex-1 bg-background border border-foreground text-foreground text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-foreground hover:text-background transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-1 focus:ring-offset-background"
           >
             Apple Calendar
           </a>
@@ -51,7 +51,7 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => track('webcal_click', { client: 'google' })}
-            className="flex-1 bg-black border border-white text-white text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-1 focus:ring-offset-black"
+            className="flex-1 bg-background border border-foreground text-foreground text-xs uppercase tracking-[0.15em] px-4 py-2.5 text-center hover:bg-foreground hover:text-background transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-1 focus:ring-offset-background"
           >
             Google Calendar
           </a>
@@ -59,8 +59,8 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
       </div>
 
       {/* URL block */}
-      <div className="border border-white/15 p-4 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
+      <div className="border border-foreground/15 p-4 space-y-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30">
           {name} · personal transit calendar
         </p>
 
@@ -68,34 +68,34 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
           <input
             id="subscribe-url" type="text" readOnly value={subscribeUrl}
             aria-label="Subscribe URL"
-            className="flex-1 min-w-0 bg-black border border-white/20 text-white/60 text-xs px-3 py-2 focus:outline-none focus:border-white/50"
+            className="flex-1 min-w-0 bg-background border border-foreground/20 text-foreground/60 text-xs px-3 py-2 focus:outline-none focus:border-foreground/50"
           />
           <button
             onClick={handleCopy}
             aria-label={copied ? 'Copied' : 'Copy URL'}
-            className="shrink-0 bg-white text-black text-xs uppercase tracking-[0.15em] px-4 py-2 hover:bg-white/90 transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-1 focus:ring-offset-black"
+            className="shrink-0 bg-foreground text-background text-xs uppercase tracking-[0.15em] px-4 py-2 hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-1 focus:ring-offset-background"
           >
             {copied ? '✓' : 'Copy'}
           </button>
         </div>
 
-        <p className="text-[10px] text-white/20 uppercase tracking-widest">
+        <p className="text-[10px] text-foreground/20 uppercase tracking-widest">
           Or copy URL for Outlook and other iCal apps
         </p>
       </div>
 
       {/* Instructions */}
-      <div className="border border-white/10 p-4 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Manual setup · Google Calendar</p>
+      <div className="border border-foreground/10 p-4 space-y-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40">Manual setup · Google Calendar</p>
         <ol className="space-y-2.5">
           {steps.map((step, i) => (
-            <li key={i} className="flex items-start gap-3 text-xs text-white/50">
-              <span className="shrink-0 text-[10px] text-white/25 mt-px tabular-nums">{i + 1}.</span>
+            <li key={i} className="flex items-start gap-3 text-xs text-foreground/50">
+              <span className="shrink-0 text-[10px] text-foreground/25 mt-px tabular-nums">{i + 1}.</span>
               {step}
             </li>
           ))}
         </ol>
-        <p className="text-[10px] text-white/20 pt-2 border-t border-white/8 uppercase tracking-widest">
+        <p className="text-[10px] text-foreground/20 pt-2 border-t border-foreground/8 uppercase tracking-widest">
           Also works with Apple Calendar, Outlook, and any iCal app
         </p>
       </div>

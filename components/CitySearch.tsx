@@ -111,20 +111,20 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
           type="text" value={query} onChange={handleChange} onKeyDown={handleKeyDown}
           placeholder="Search city…" autoComplete="off"
           aria-label="Birth city" aria-expanded={isOpen} aria-haspopup="listbox"
-          className="w-full bg-black border border-white/20 text-white placeholder:text-white/20 px-3 py-2 text-sm focus:outline-none focus:border-white/70 transition-colors pr-8"
+          className="w-full bg-background border border-foreground/20 text-foreground placeholder:text-foreground/20 px-3 py-2 text-sm focus:outline-none focus:border-foreground/70 transition-colors pr-8"
         />
         {isLoading && (
-          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 text-foreground/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
         )}
       </div>
 
-      {error && <p className="mt-1 text-[10px] text-white/50">{error}</p>}
+      {error && <p className="mt-1 text-[10px] text-foreground/50">{error}</p>}
 
       {isOpen && results.length > 0 && (
-        <ul role="listbox" className="absolute z-50 w-full mt-1 bg-black border border-white/20 shadow-xl overflow-hidden">
+        <ul role="listbox" className="absolute z-50 w-full mt-1 bg-background border border-foreground/20 shadow-xl overflow-hidden">
           {results.map((result, index) => {
             const isActive = index === activeIndex;
             const addr = result.address;
@@ -139,11 +139,11 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
               <li
                 key={result.place_id} role="option" aria-selected={isActive}
                 onMouseDown={() => handleSelect(result)} onMouseEnter={() => setActiveIndex(index)}
-                className={`px-3 py-2.5 cursor-pointer text-xs transition-colors flex flex-col leading-tight ${isActive ? 'bg-white text-black' : 'text-white/60 hover:bg-white/8'}`}
+                className={`px-3 py-2.5 cursor-pointer text-xs transition-colors flex flex-col leading-tight ${isActive ? 'bg-foreground text-background' : 'text-foreground/60 hover:bg-foreground/8'}`}
               >
                 <span>{primaryName}</span>
                 {secondary && (
-                  <span className={isActive ? 'text-black/60' : 'text-white/40'}>{secondary}</span>
+                  <span className={isActive ? 'text-background/60' : 'text-foreground/40'}>{secondary}</span>
                 )}
               </li>
             );

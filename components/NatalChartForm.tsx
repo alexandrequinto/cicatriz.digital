@@ -12,8 +12,8 @@ interface FormErrors {
   city?: string;
 }
 
-const fieldLabel = 'block text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1.5';
-const fieldInput = 'w-full bg-black border border-white/20 text-white text-sm px-3 py-2 focus:outline-none focus:border-white/70 transition-colors placeholder:text-white/20';
+const fieldLabel = 'block text-[10px] uppercase tracking-[0.2em] text-foreground/40 mb-1.5';
+const fieldInput = 'w-full bg-background border border-foreground/20 text-foreground text-sm px-3 py-2 focus:outline-none focus:border-foreground/70 transition-colors placeholder:text-foreground/20';
 
 const FILTER_OPTIONS = [
   { bit: FILTER_BITS['outer-transit'], label: 'Slow transits ♄♃',       hint: 'Jupiter · Saturn · Uranus · Neptune · Pluto' },
@@ -89,7 +89,7 @@ export default function NatalChartForm() {
           aria-describedby={errors.name ? 'name-error' : undefined}
           className={fieldInput}
         />
-        {errors.name && <p id="name-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.name}</p>}
+        {errors.name && <p id="name-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.name}</p>}
       </div>
 
       {/* Date + Time — stack on mobile, side-by-side on sm+ */}
@@ -101,30 +101,30 @@ export default function NatalChartForm() {
             onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: undefined })); }}
             required aria-invalid={!!errors.date}
             aria-describedby={errors.date ? 'date-error' : undefined}
-            className={fieldInput + ' [color-scheme:dark]'}
+            className={fieldInput + ' '}
           />
-          {errors.date && <p id="date-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.date}</p>}
+          {errors.date && <p id="date-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.date}</p>}
         </div>
 
         <div className="min-w-0">
           <label htmlFor="time" className={fieldLabel}>
-            Birth time <span className="text-white/20 normal-case tracking-normal">optional</span>
+            Birth time <span className="text-foreground/20 normal-case tracking-normal">optional</span>
           </label>
           <input
             id="time" type="time" value={time} disabled={unknownTime}
             onChange={(e) => setTime(e.target.value)}
-            className={fieldInput + ' [color-scheme:dark] disabled:opacity-25 disabled:cursor-not-allowed'}
+            className={fieldInput + '  disabled:opacity-25 disabled:cursor-not-allowed'}
           />
           <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
             <input
               type="checkbox" checked={unknownTime}
               onChange={(e) => { setUnknownTime(e.target.checked); if (e.target.checked) setTime(''); }}
-              className="w-3 h-3 accent-white"
+              className="w-3 h-3 accent-foreground"
             />
-            <span className="text-[10px] uppercase tracking-[0.15em] text-white/30">Unknown</span>
+            <span className="text-[10px] uppercase tracking-[0.15em] text-foreground/30">Unknown</span>
           </label>
           {unknownTime && (
-            <p className="text-[10px] text-white/30 uppercase tracking-[0.12em] mt-2 leading-relaxed">
+            <p className="text-[10px] text-foreground/30 uppercase tracking-[0.12em] mt-2 leading-relaxed">
               ☽ Moon transits will use solar noon as an approximation.
             </p>
           )}
@@ -135,11 +135,11 @@ export default function NatalChartForm() {
       <div>
         <label className={fieldLabel}>Birth city</label>
         <CitySearch onSelect={handleCitySelect} />
-        {errors.city && <p id="city-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.city}</p>}
+        {errors.city && <p id="city-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.city}</p>}
       </div>
 
       {/* Divider */}
-      <div className="border-t border-white/8" />
+      <div className="border-t border-foreground/8" />
 
       {/* Filters */}
       <div>
@@ -153,18 +153,18 @@ export default function NatalChartForm() {
                   type="checkbox"
                   checked={checked}
                   onChange={() => setFilters(checked ? filters & ~bit : filters | bit)}
-                  className="mt-px w-3 h-3 accent-white shrink-0"
+                  className="mt-px w-3 h-3 accent-foreground shrink-0"
                 />
-                <span className="text-xs text-white/70 leading-snug">
+                <span className="text-xs text-foreground/70 leading-snug">
                   {label}
-                  {hint && <span className="text-white/25 ml-2 text-[10px]">{hint}</span>}
+                  {hint && <span className="text-foreground/25 ml-2 text-[10px]">{hint}</span>}
                 </span>
               </label>
             );
           })}
         </div>
         {filters === 0 && (
-          <p className="mt-3 text-[10px] text-white/40 uppercase tracking-widest">
+          <p className="mt-3 text-[10px] text-foreground/40 uppercase tracking-widest">
             No types selected — calendar will be empty
           </p>
         )}
@@ -172,7 +172,7 @@ export default function NatalChartForm() {
 
       <button
         type="submit" disabled={isSubmitting}
-        className="w-full bg-white text-black text-xs uppercase tracking-[0.2em] py-3 hover:bg-white/90 transition-colors focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-foreground text-background text-xs uppercase tracking-[0.2em] py-3 hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Generating…' : 'Generate calendar'}
       </button>
