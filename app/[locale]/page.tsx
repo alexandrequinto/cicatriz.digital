@@ -25,14 +25,15 @@ export default function Home() {
       />
 
       <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-10">
-        <LocaleSwitcher />
-
         {/* Hero */}
         <section>
-          <div className="flex gap-3 mb-5 select-none" aria-hidden="true">
-            {['♄','☽','♃','☿','♀','♂'].map(s => (
-              <span key={s} className="text-xl text-foreground/20 leading-none">{s}</span>
-            ))}
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex gap-3 select-none" aria-hidden="true">
+              {['♄','☽','♃','☿','♀','♂'].map(s => (
+                <span key={s} className="text-xl text-foreground/20 leading-none">{s}</span>
+              ))}
+            </div>
+            <LocaleSwitcher />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
             Cicatriz
