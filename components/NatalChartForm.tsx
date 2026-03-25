@@ -192,7 +192,7 @@ export default function NatalChartForm() {
 
       <button
         type="submit" disabled={isSubmitting}
-        className="w-full bg-foreground text-background text-xs uppercase tracking-[0.2em] py-3 hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-foreground text-background text-xs uppercase tracking-[0.2em] py-3 hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isSubmitting ? t('submitting') : t('submit')}
       </button>
