@@ -4,6 +4,7 @@ import { getOuterTransits } from './transits';
 import { getPersonalTransits } from './personalTransits';
 import { getIngressAndRetrogradeEvents } from './ingresses';
 import { getLunarPhaseEvents } from './lunarPhases';
+import { getEclipseEvents } from './eclipses';
 import { FILTER_BITS } from './birthData';
 
 const PREVIEW_MONTHS = 3;
@@ -21,12 +22,14 @@ export function getPreviewEvents(birthData: BirthData): TransitEvent[] {
   const innerTransits = getPersonalTransits(natal, now, PREVIEW_MONTHS);
   const lunarEvents = getLunarPhaseEvents(now, PREVIEW_MONTHS);
   const ingressEvents = getIngressAndRetrogradeEvents(now, PREVIEW_MONTHS);
+  const eclipseEvents = getEclipseEvents(now, PREVIEW_MONTHS);
 
   const allEvents: TransitEvent[] = [
     ...outerTransits,
     ...innerTransits,
     ...lunarEvents,
     ...ingressEvents,
+    ...eclipseEvents,
   ];
 
   // Apply category filter if specified; absent (legacy tokens) = all enabled

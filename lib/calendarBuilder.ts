@@ -24,6 +24,7 @@ export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHas
     'lunar':         '#708090',
     'ingress':       '#2E8B57',
     'retrograde':    '#DC143C',
+    'eclipse':       '#8B008B',
   };
 
   for (const event of events) {

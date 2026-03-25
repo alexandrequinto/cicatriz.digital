@@ -21,6 +21,7 @@ const FILTER_OPTIONS = [
   { bit: FILTER_BITS['lunar'],         label: 'Lunar phases ☽',          hint: 'New Moon · Full Moon · quarters' },
   { bit: FILTER_BITS['ingress'],       label: 'Sign ingresses ♈',        hint: 'Planets entering new signs' },
   { bit: FILTER_BITS['retrograde'],    label: 'Retrograde stations ℞',   hint: '' },
+  { bit: FILTER_BITS['eclipse'],       label: 'Eclipses ◉',              hint: 'Solar & lunar eclipses' },
 ] as const;
 
 export default function NatalChartForm() {

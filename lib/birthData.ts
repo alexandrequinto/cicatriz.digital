@@ -17,9 +17,10 @@ export const FILTER_BITS = {
   'lunar': 4,
   'ingress': 8,
   'retrograde': 16,
+  'eclipse': 32,
 } as const;
 
-export const ALL_FILTERS = 31; // all 5 bits set
+export const ALL_FILTERS = 63; // all 6 bits set
 
 function toBase64url(buf: Buffer): string {
   return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');

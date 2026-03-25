@@ -61,6 +61,10 @@ function buildAllKeys(): string[] {
   for (const phase of LUNAR_PHASES)
     keys.push(phase);
 
+  // Eclipses: 6
+  keys.push('Solar Eclipse|total', 'Solar Eclipse|annular', 'Solar Eclipse|partial');
+  keys.push('Lunar Eclipse|total', 'Lunar Eclipse|partial', 'Lunar Eclipse|penumbral');
+
   return keys;
 }
 
@@ -85,6 +89,7 @@ Guidelines:
 - For Moon ingress+phase keys ("Moon|ingress|Sign|Phase"): describe what it feels like when the Moon moves into that sign specifically during that lunar phase. The phase shapes the quality — initiating (New), building (Waxing Crescent, First Quarter, Waxing Gibbous), peak/release (Full), releasing/integrating (Waning Gibbous, Last Quarter, Waning Crescent). Be specific about how the phase modifies the sign's expression.
 - For retrograde/direct keys ("Planet|retrograde" or "Planet|direct"): describe the station event and what to expect.
 - For lunar keys ("New Moon", "Full Moon", etc.): describe the general quality of that phase.
+- For eclipse keys ("Solar Eclipse|total", "Lunar Eclipse|partial", etc.): describe the felt quality of that specific eclipse type — what it tends to bring up, how total vs partial vs annular/penumbral differs in intensity.
 
 Return ONLY a valid JSON object where each provided key maps to its interpretation string. No markdown, no explanation, no surrounding text — just the raw JSON object.`;
 
