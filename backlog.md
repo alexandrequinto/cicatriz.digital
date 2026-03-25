@@ -22,9 +22,7 @@
 - [ ] **Trust signals and privacy explainer** — "No account. No storage." is in the footer but undersells the model. Add a plain-language section explaining the stateless token architecture — your birth data never leaves your URL, nothing is stored server-side. Critical because this is PII. `[Trust · Must]`
 
 ### Content
-- [ ] **FAQ page** — How the product works, privacy model, how to interpret events, how to use filters, how calendar subscription works. Covers the post-subscribe dead-end and drives organic search. `[Content · SEO]`
-- [ ] **HowTo and FAQ structured data** — `HowTo` schema on result page subscribe steps; `FAQPage` schema on /faq. `[SEO]`
-- [ ] **/transit/:slug content pages** — "mercury retrograde 2026 dates," "saturn square natal sun meaning" — static content layer per transit type. `[SEO]`
+- [ ] **FAQ page** — Covers: how the product works, what we do with your data (nothing — stateless token), are event descriptions personalized (no — pre-written per transit type), how descriptions are generated, how filters work, how calendar subscription works, how to interpret events. `[Content]`
 
 ### Growth
 - [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. High astrology engagement in Brazil, Mexico, Argentina, Spain. Needs careful planning: copy, date formats, city search locale. `[Growth · Plan first]`
