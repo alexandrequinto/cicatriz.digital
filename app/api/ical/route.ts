@@ -8,6 +8,7 @@ import { getOuterTransits } from '@/lib/transits';
 import { getPersonalTransits } from '@/lib/personalTransits';
 import { getLunarPhaseEvents } from '@/lib/lunarPhases';
 import { getIngressAndRetrogradeEvents } from '@/lib/ingresses';
+import { getEclipseEvents } from '@/lib/eclipses';
 import { buildCalendar } from '@/lib/calendarBuilder';
 import { FILTER_BITS } from '@/lib/birthData';
 
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
     return new Response('Invalid birth time format', { status: 400 });
   }
   // Validate filters bitmask if present
-  if (birth.filters != null && (!Number.isInteger(birth.filters) || birth.filters < 0 || birth.filters > 31)) {
+  if (birth.filters != null && (!Number.isInteger(birth.filters) || birth.filters < 0 || birth.filters > 63)) {
     return new Response('Invalid filters value', { status: 400 });
   }
 
@@ -92,19 +93,20 @@ export async function GET(request: NextRequest) {
       setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS)
     );
 
-    const [outerTransits, innerTransits, lunar, ingresses] = await Promise.race([
+    const [outerTransits, innerTransits, lunar, ingresses, eclipses] = await Promise.race([
       Promise.all([
         Promise.resolve(getOuterTransits(natal, now, 12)),
         Promise.resolve(getPersonalTransits(natal, now, 12)),
         Promise.resolve(getLunarPhaseEvents(now, 12)),
         Promise.resolve(getIngressAndRetrogradeEvents(now, 12)),
+        Promise.resolve(getEclipseEvents(now, 12)),
       ]),
       timeoutPromise,
-    ]) as [ReturnType<typeof getOuterTransits>, ReturnType<typeof getPersonalTransits>, ReturnType<typeof getLunarPhaseEvents>, ReturnType<typeof getIngressAndRetrogradeEvents>];
+    ]) as [ReturnType<typeof getOuterTransits>, ReturnType<typeof getPersonalTransits>, ReturnType<typeof getLunarPhaseEvents>, ReturnType<typeof getIngressAndRetrogradeEvents>, ReturnType<typeof getEclipseEvents>];
 
     const t2 = Date.now();
 
-    const allEvents = [...outerTransits, ...innerTransits, ...lunar, ...ingresses];
+    const allEvents = [...outerTransits, ...innerTransits, ...lunar, ...ingresses, ...eclipses];
 
     // Apply category filter if specified (absent or 31 = all enabled, backward-compatible)
     const activeFilters = birth.filters;
@@ -133,6 +135,7 @@ export async function GET(request: NextRequest) {
         inner: innerTransits.length,
         lunar: lunar.length,
         ingresses: ingresses.length,
+        eclipses: eclipses.length,
         total: allEvents.length,
         filtered: filteredEvents.length,
       },

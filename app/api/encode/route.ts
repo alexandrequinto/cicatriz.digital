@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   if (!city || typeof city !== 'string') {
     return new Response('Missing city', { status: 400 });
   }
-  if (filters !== undefined && (!Number.isInteger(filters) || (filters as number) < 0 || (filters as number) > 31)) {
+  if (filters !== undefined && (!Number.isInteger(filters) || (filters as number) < 0 || (filters as number) > 63)) {
     return new Response('Invalid filters', { status: 400 });
   }
 
