@@ -19,7 +19,7 @@ export function getLunarPhaseEvents(windowStart: Date, windowMonths: number): Tr
     const phaseInterp = getInterpretation(PHASE_KEYS[mq.quarter]);
     events.push({
       title: PHASE_NAMES[mq.quarter],
-      description: phaseInterp ? `${phaseMech}\n\n${phaseInterp}` : phaseMech,
+      description: `Lunar Phase\n\n${phaseInterp ? `${phaseMech}\n\n${phaseInterp}` : phaseMech}`,
       startDate: phaseDate,
       endDate: new Date(phaseDate.getTime() + ONE_HOUR),
       exactDate: phaseDate,

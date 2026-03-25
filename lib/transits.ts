@@ -61,7 +61,7 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
               const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
               const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
               const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
-              const description = interp ? `${mech}\n\n${interp}` : mech;
+              const description = `Outer Planet Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
               events.push({
                 title: `${base} — begins`,
                 description,
@@ -93,7 +93,7 @@ export function getOuterTransits(natal: NatalPlanet[], windowStart: Date, window
           const base = `${transitPlanet} ${aspect.symbol} natal ${natalTarget} ${PLANET_SYMBOLS[natalTarget] ?? ''}`.trim();
           const mech = `${transitPlanet} ${aspect.name} your natal ${natalTarget} in ${getSign(natalPlanet.longitude)}.\nExact: ${exactDate.toDateString()}\nPeak orb: ${minSep.toFixed(1)}°`;
           const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalTarget}`);
-          const description = interp ? `${mech}\n\n${interp}` : mech;
+          const description = `Outer Planet Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
           events.push({
             title: `${base} — begins`,
             description,

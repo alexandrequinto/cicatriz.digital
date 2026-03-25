@@ -51,7 +51,7 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
         const ingressInterp = getInterpretation(`${planet}|ingress|${signName}`);
         events.push({
           title: `${planet} ${sym} enters ${signName}`,
-          description: ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech,
+          description: `Sign Ingress\n\n${ingressInterp ? `${ingressMech}\n\n${ingressInterp}` : ingressMech}`,
           startDate: cursor,
           endDate: new Date(cursorMs + ONE_HOUR),
           exactDate: cursor,
@@ -75,7 +75,7 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
           pendingRetrograde = {
             startMs: cursorMs,
             title: `${planet} Retrograde ℞`,
-            description: rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech,
+            description: `Retrograde Station\n\n${rxInterp ? `${rxMech}\n\n${rxInterp}` : rxMech}`,
           };
         } else if (normPrev < 0 && normCurr > 0) {
           // Station direct — close the pending retrograde span
@@ -94,7 +94,7 @@ export function getIngressAndRetrogradeEvents(windowStart: Date, windowMonths: n
           const dInterp = getInterpretation(`${planet}|direct`);
           events.push({
             title: `${planet} Direct ↻`,
-            description: dInterp ? `${dMech}\n\n${dInterp}` : dMech,
+            description: `Retrograde Station\n\n${dInterp ? `${dMech}\n\n${dInterp}` : dMech}`,
             startDate: cursor,
             endDate: new Date(cursorMs + ONE_HOUR),
             exactDate: cursor,
