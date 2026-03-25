@@ -39,8 +39,6 @@ export default function NatalChartForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const today = new Date().toISOString().split('T')[0];
-
   const handleCitySelect = (cityName: string, selectedLat: number, selectedLng: number, selectedTz: string) => {
     setCity(cityName);
     setLat(selectedLat);
@@ -52,7 +50,13 @@ export default function NatalChartForm() {
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
     if (!name.trim()) errs.name = 'Required';
-    if (!date) errs.date = 'Required';
+    if (!date) {
+      errs.date = 'Required';
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(new Date(date).getTime())) {
+      errs.date = 'Use YYYY-MM-DD format';
+    } else if (new Date(date) > new Date()) {
+      errs.date = 'Date must be in the past';
+    }
     if (!city || lat === null || lng === null || !tz) errs.city = 'Select a city from the results';
     return errs;
   };
@@ -109,11 +113,11 @@ export default function NatalChartForm() {
         <div className="min-w-0">
           <label htmlFor="date" className={fieldLabel}>Birth date</label>
           <input
-            id="date" type="date" value={date} max={today}
+            id="date" type="text" value={date} placeholder="YYYY-MM-DD"
             onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: undefined })); }}
             required aria-invalid={!!errors.date}
             aria-describedby={errors.date ? 'date-error' : undefined}
-            className={fieldInput + ' '}
+            className={fieldInput}
           />
           {errors.date && <p id="date-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.date}</p>}
         </div>
@@ -123,9 +127,9 @@ export default function NatalChartForm() {
             Birth time <span className="text-foreground/20 normal-case tracking-normal">optional</span>
           </label>
           <input
-            id="time" type="time" value={time} disabled={unknownTime}
+            id="time" type="text" value={time} placeholder="HH:MM" disabled={unknownTime}
             onChange={(e) => setTime(e.target.value)}
-            className={fieldInput + '  disabled:opacity-25 disabled:cursor-not-allowed'}
+            className={fieldInput + ' disabled:opacity-25 disabled:cursor-not-allowed'}
           />
           <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
             <input
