@@ -31,12 +31,15 @@ export default function Image() {
         </div>
 
         {/* Brand */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 80, fontWeight: 700, color: '#ffffff', letterSpacing: '-1px', display: 'flex' }}>
             Cicatriz
           </div>
           <div style={{ fontSize: 22, color: 'rgba(255,255,255,0.35)', fontWeight: 400, display: 'flex', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
             Marked by the cosmos
+          </div>
+          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.18)', fontWeight: 400, display: 'flex', letterSpacing: '0.15em' }}>
+            Planetary transits · Lunar phases · Retrograde stations
           </div>
         </div>
       </div>
