@@ -3,7 +3,8 @@
     "tagline": "Marked by the cosmos",
     "description": "Enter your birth data. Get a live calendar subscription with your personal planetary transits, lunar phases, and retrograde stations.",
     "footerNoStorage": "No account · No storage · Your data lives only in your URL",
-    "footerHowItWorks": "How it works →"
+    "footerHowItWorks": "How it works →",
+    "footerFeedback": "Feedback →"
   },
   "meta": {
     "title": "Cicatriz — Marked by the cosmos",

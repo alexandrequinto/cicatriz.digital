@@ -53,8 +53,9 @@ export default function Home() {
         <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-center">
           {t('footerNoStorage')}
         </p>
-        <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center">
+        <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center space-x-4">
           <Link href="/faq" className="hover:text-foreground/60 transition-colors">{t('footerHowItWorks')}</Link>
+          <a href="mailto:feedback@cicatriz.digital" className="hover:text-foreground/60 transition-colors">{t('footerFeedback')}</a>
         </p>
       </footer>
     </div>
