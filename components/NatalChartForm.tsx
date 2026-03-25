@@ -125,7 +125,7 @@ export default function NatalChartForm() {
 
         <div className="min-w-0">
           <label htmlFor="time" className={fieldLabel}>
-            {t('birthTime')} <span className="text-foreground/20 normal-case tracking-normal">{t('birthTimeOptional')}</span>
+            {t('birthTime')}
           </label>
           <input
             id="time" type="time" value={time} disabled={unknownTime}
