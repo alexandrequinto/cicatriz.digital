@@ -86,9 +86,10 @@ export default function NatalChartForm() {
           onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
           required autoComplete="given-name" placeholder="Your name"
           aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
           className={fieldInput}
         />
-        {errors.name && <p className="mt-1 text-[10px] text-white/50">{errors.name}</p>}
+        {errors.name && <p id="name-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.name}</p>}
       </div>
 
       {/* Date + Time — stack on mobile, side-by-side on sm+ */}
@@ -99,9 +100,10 @@ export default function NatalChartForm() {
             id="date" type="date" value={date} max={today}
             onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: undefined })); }}
             required aria-invalid={!!errors.date}
+            aria-describedby={errors.date ? 'date-error' : undefined}
             className={fieldInput + ' [color-scheme:dark]'}
           />
-          {errors.date && <p className="mt-1 text-[10px] text-white/50">{errors.date}</p>}
+          {errors.date && <p id="date-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.date}</p>}
         </div>
 
         <div className="min-w-0">
@@ -121,6 +123,11 @@ export default function NatalChartForm() {
             />
             <span className="text-[10px] uppercase tracking-[0.15em] text-white/30">Unknown</span>
           </label>
+          {unknownTime && (
+            <p className="text-[10px] text-white/30 uppercase tracking-[0.12em] mt-2 leading-relaxed">
+              ☽ Moon transits will use solar noon as an approximation.
+            </p>
+          )}
         </div>
       </div>
 
@@ -128,7 +135,7 @@ export default function NatalChartForm() {
       <div>
         <label className={fieldLabel}>Birth city</label>
         <CitySearch onSelect={handleCitySelect} />
-        {errors.city && <p className="mt-1 text-[10px] text-white/50">{errors.city}</p>}
+        {errors.city && <p id="city-error" role="alert" className="mt-1 text-[10px] text-white/50">{errors.city}</p>}
       </div>
 
       {/* Divider */}
