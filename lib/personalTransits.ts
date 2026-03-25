@@ -55,7 +55,7 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
               const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
               const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
               const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
-              const description = interp ? `${mech}\n\n${interp}` : mech;
+              const description = `Personal Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
               events.push({
                 title: `${base} — begins`,
                 description,
@@ -90,7 +90,7 @@ export function getPersonalTransits(natal: NatalPlanet[], windowStart: Date, win
           const base = `${transitPlanet} ${aspect.symbol} natal ${natalPlanet.name}${approxSuffix}`;
           const mech = `${transitPlanet} ${aspect.name} your natal ${natalPlanet.name} in ${getSign(natalPlanet.longitude)}.`;
           const interp = getInterpretation(`${transitPlanet}|${aspect.name}|${natalPlanet.name}`);
-          const description = interp ? `${mech}\n\n${interp}` : mech;
+          const description = `Personal Transit\n\n${interp ? `${mech}\n\n${interp}` : mech}`;
           events.push({
             title: `${base} — begins`,
             description,
