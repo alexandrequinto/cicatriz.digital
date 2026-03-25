@@ -92,8 +92,8 @@ export default function NatalChartForm() {
       </div>
 
       {/* Date + Time — stack on mobile, side-by-side on sm+ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-hidden">
+        <div className="min-w-0">
           <label htmlFor="date" className={fieldLabel}>Birth date</label>
           <input
             id="date" type="date" value={date} max={today}
@@ -104,7 +104,7 @@ export default function NatalChartForm() {
           {errors.date && <p className="mt-1 text-[10px] text-white/50">{errors.date}</p>}
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label htmlFor="time" className={fieldLabel}>
             Birth time <span className="text-white/20 normal-case tracking-normal">optional</span>
           </label>

@@ -5,32 +5,35 @@
 ## To Do
 
 ### Bugs
+- [ ] **Mobile date/time field overflow** — Native `<input type="date/time">` intrinsic widths break viewport on mobile. Fix: `min-w-0` on grid children + `overflow-hidden` on container. `[Bug · Mobile]` ✓ fixed, pending QA
 
 ### UX
-- [ ] **Platform-specific subscribe instructions** — Current steps cover only Google Calendar desktop. Apple Calendar accepts `webcal://` one-tap links. Google Calendar on mobile doesn't support URL subscription at all. Add tabbed instructions per client with a mobile caveat. `[UX]`
-- [ ] **Inline birth time warning** — The "Unknown" checkbox is easy to miss and the Moon-transit warning appears only on the result page. Surface the consequence ("Moon transits estimated") as inline help text next to the time field. `[UX]`
-- [ ] **Better city search result display** — Raw truncated `display_name` is ambiguous for common city names (Paris, Springfield, Santiago). Show two lines: city name + country/state in muted text below. `[UX]`
-- [ ] **Bookmark / share result page nudge** — The result URL permanently encodes all birth data and is the only way to recover the subscribe URL. Add a "Bookmark or share this page" nudge and a Web Share API button for mobile. `[UX]`
-- [ ] **PWA manifest and theme-color** — No `manifest.json`, no `<meta name="theme-color">`. Mobile browser chrome stays default white. Adding manifest also enables "Add to Home Screen." `[UX]`
-- [ ] **ARIA describedby on form error messages** — Error `<p>` elements have no `id` and are not linked via `aria-describedby`. Screen readers announce invalid fields but don't read the reason. WCAG 2.1 AA failure. `[Accessibility]`
+- [ ] **Better city search result display** — Raw truncated `display_name` is ambiguous for common city names (e.g. "São Bernardo do Campo - SP" returns duplicates). Show two lines: city name + country/state in muted text below. `[UX]`
+- [ ] **Light/dark mode per system preference** — Current palette is pure black. Respect `prefers-color-scheme` to lighten the palette on light-mode devices, or introduce a proper light theme. `[UX]`
+- [ ] **ARIA describedby on form error messages** — Error `<p>` elements have no `id` and are not linked via `aria-describedby`. Screen readers announce invalid fields but don't read the reason. WCAG 2.1 AA failure. `[Accessibility · Must]`
+- [ ] **Inline birth time warning** — Surface "Moon transits estimated" as inline help text next to the time field rather than only showing on the result page. `[UX]`
 
 ### Features
-- [ ] **Per-category iCal event colors** — All events render in the same default calendar color. Add `COLOR` (RFC 7986) and `X-APPLE-CALENDAR-COLOR` per category (e.g. outer transits: indigo, lunar: silver, retrograde: red). Zero-cost differentiation visible in every calendar client. `[Feature]`
-- [ ] **Shareable chart summary + personalized OG image** — Decode the `data` param to compute Sun/Moon sign on the result page, show a small identity card, and generate a dynamic OG image per result so social shares show the user's chart rather than the generic brand image. `[Feature · Growth]`
-- [ ] **"Generate for a friend" CTA** — The result URL is already shareable. Add a "Create one for someone else" link and a copy-result-URL button to surface the referral mechanic that's already built into the architecture. `[Feature · Growth]`
+- [ ] **Per-category iCal event colors** — Add `COLOR` (RFC 7986) and `X-APPLE-CALENDAR-COLOR` per category (outer transits: indigo, inner transits: blue, lunar: silver, ingress: green, retrograde: red). Also prepend event type label to description so users know what kind of event it is. `[Feature]`
+- [ ] **Updated OG / social image** — Refresh look and feel to match current B&W Cicatriz design. No personal data — static brand image only. `[Design]`
+- [ ] **Homepage product description** — Add 1–2 lines below the "Marked by the cosmos" slogan explaining what the product does. Keep it minimal. `[Copy]`
 
-### SEO & Content
-- [ ] **/guide page — what your transit events mean** — Users will see "Saturn □ natal Venus" in their calendar with no context. A minimal glossary (aspects, outer planets, retrogrades) gives the site indexable long-tail content and closes the post-subscribe dead-end. `[Content · SEO]`
-- [ ] **/transit/:slug content pages** — "mercury retrograde 2026 dates," "saturn square natal sun meaning" drive real search volume. A static content layer per transit type positions cicatriz as a reference, each ending with the form CTA. `[SEO]`
-- [ ] **HowTo and FAQ structured data** — Add `HowTo` schema to the result page subscribe steps and `FAQPage` schema to the /guide page to capture featured snippet real estate for "how to add astrology calendar to Google Calendar." `[SEO]`
+### Trust & Privacy
+- [ ] **Trust signals and privacy explainer** — "No account. No storage." is in the footer but undersells the model. Add a plain-language section explaining the stateless token architecture — your birth data never leaves your URL, nothing is stored server-side. Critical because this is PII. `[Trust · Must]`
 
-### Growth & Monetization
-- [ ] **Trust signals for the privacy model** — Promote "No account. No storage." to a prominent, plain-language explanation of how the stateless token works. `[Trust · Growth]` (moved up from Growth)
-- [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. Astrology engagement is extremely high in Brazil, Mexico, Argentina, and Spain. Localizing UI copy and metadata would unlock large, culturally aligned markets where the brand name already resonates. `[Growth]`
-- [ ] **Premium signed-URL tier** — One-time payment generates a signed token unlocking: 24-month window, additional bodies (Chiron, Nodes), richer event descriptions. No user database required — premium entitlement lives in the signed token. Preserves the no-account ethos. `[Monetization]`
+### Content
+- [ ] **FAQ page** — How the product works, privacy model, how to interpret events, how to use filters, how calendar subscription works. Covers the post-subscribe dead-end and drives organic search. `[Content · SEO]`
+- [ ] **HowTo and FAQ structured data** — `HowTo` schema on result page subscribe steps; `FAQPage` schema on /faq. `[SEO]`
+- [ ] **/transit/:slug content pages** — "mercury retrograde 2026 dates," "saturn square natal sun meaning" — static content layer per transit type. `[SEO]`
+
+### Growth
+- [ ] **Spanish and Portuguese localization** — "Cicatriz" is Spanish/Portuguese. High astrology engagement in Brazil, Mexico, Argentina, Spain. Needs careful planning: copy, date formats, city search locale. `[Growth · Plan first]`
+- [ ] **Send feedback** — Lightweight feedback mechanism. Needs design thinking: what channel (email, form, GitHub issues?), how to keep it stateless/private, when to surface it. `[Growth · Plan first]`
+- [ ] **Support / Buy Me a Coffee** — Community project. Needs design thinking: placement, copy tone, platform choice (Ko-fi, GitHub Sponsors, BMC). Should feel optional and aligned with the no-monetization ethos. `[Community · Plan first]`
 
 ## Done
 
+- [x] **Transit events as single-day markers** — Each transit emits two all-day events ("begins" on ingress, "exact" on peak) instead of a multi-day spanning block. Both outer and inner transits affected.
 - [x] **Retrograde periods as multi-day calendar spans** — Retrograde station events now span from Rx date to direct date. Direct station remains a 1-hour point event. Window-end flush and orphaned direct station handled. 8 new tests.
 - [x] **webcal:// deep-link subscribe buttons** — "Add to Apple Calendar" (webcal://) and "Add to Google Calendar" (google.com/calendar/render?cid=) buttons added to result page above the copy input.
 - [x] **Event preview on result page** — Next 5 upcoming events computed server-side (3-month window), shown below confirmation card. Respects filters bitmask. Non-fatal try/catch.
@@ -39,7 +42,7 @@
 
 - [x] **Transit interpretation copy** — 278-entry `lib/transitInterpretations.json` pre-generated via Claude Haiku (~$0.02). `lib/interpretations.ts` exports `getInterpretation(key)`. Injected at all push sites in `transits.ts`, `personalTransits.ts`, `ingresses.ts`, `lunarPhases.ts`. Zero runtime cost.
 - [x] **Per-category event filtering** — 5-bit bitmask (`f` field in token). Five filter checkboxes in `NatalChartForm` (outer transits, inner transits, lunar phases, ingresses, retrogrades). Backward-compatible: absent field = all enabled. `/api/ical` validates 0–31 range.
-- [x] **B&W redesign** — Pure black (#000) / white Geist Mono industrial minimalist palette. "Cicatriz" title with "Marked by the cosmos" slogan. Astrological symbols as decorative elements. All components updated: `NatalChartForm`, `SubscribeUrl`, `CitySearch`, `result/page.tsx`, `globals.css`.
+- [x] **B&W redesign** — Pure black (#000) / white Geist Mono industrial minimalist palette. "Cicatriz" title with "Marked by the cosmos" slogan. Astrological symbols as decorative elements.
 - [x] **Metadata & OG image (Cicatriz brand)** — `layout.tsx` full SEO/OG/Twitter metadata. `opengraph-image.tsx` pure black 1200×630 with Cicatriz branding. JSON-LD WebApplication schema updated.
 - [x] **Mobile field overlap fix** — `grid-cols-1 sm:grid-cols-2` date/time row in `NatalChartForm`.
 - [x] **Hero symbol sizing fix** — Each symbol rendered as individual `<span>` at `text-xl text-white/20` in a flex row for consistent sizing.
@@ -62,4 +65,4 @@
 - [x] **Subscribe URL correct domain** — Uses request headers (`host` + `x-forwarded-proto`) as fallback so the full URL is always shown regardless of env var state.
 - [x] **NEXT_PUBLIC_APP_URL set** — `https://cicatriz.digital` configured in Vercel project settings.
 - [x] **Fix city selection timezone lookup** — Replaced dead `timezonefinder.michelfe.eu` with a Next.js proxy route (`/api/timezone`) calling `timeapi.io`.
-- [x] **Core app** — Next.js 16 App Router, `astronomy-engine` ephemeris, `ical-generator` iCal output, stateless base64url birth data token, `/api/ical` endpoint with rate limiting and security headers, city autocomplete via Nominatim.
+- [x] **Core app** — Next.js 16 App Router, `astronomy-engine` ephemeris, `ical-generator` iCal output, stateless base64url birth data token, `/api/ical` endpoint with security headers, city autocomplete via Nominatim.
