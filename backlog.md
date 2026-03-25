@@ -27,7 +27,9 @@
 - [x] **Event preview on result page** — Next 5 upcoming events computed server-side, shown below confirmation card.
 - [x] **Birth data confirmation card** — Name, date, time, city shown on result page with edit link.
 - [x] **Funnel event tracking** — `track('form_submit')`, `track('copy_url')`, `track('webcal_click', {client})`.
-- [x] **Transit interpretation copy** — 278-entry `lib/transitInterpretations.json`. Injected in all transit generators. Zero runtime cost.
+- [x] **Eclipse events** — Solar (total/annular/partial) and lunar (total/partial/penumbral) via astronomy-engine. Filter bit 32, dark magenta calendar color, 6 interpretations generated.
+- [x] **Moon ingress × lunar phase** — Moon ingress events show current phase in title (e.g. "Moon ☽ enters Leo · Waxing Gibbous"). 96 phase-specific interpretations generated (12 signs × 8 phases).
+- [x] **Transit interpretation copy** — 405-entry `lib/transitInterpretations.json`. Injected in all transit generators. Zero runtime cost.
 - [x] **Per-category event filtering** — 5-bit bitmask (`f` field in token). Five filter checkboxes. Backward-compatible.
 - [x] **B&W redesign** — Pure black/white Geist Mono industrial palette. "Cicatriz" + "Marked by the cosmos" slogan.
 - [x] **Metadata & OG image (Cicatriz brand)** — Full SEO/OG/Twitter metadata, `opengraph-image.tsx`, JSON-LD schema.

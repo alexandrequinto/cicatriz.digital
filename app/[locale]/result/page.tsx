@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { decodeBirthData, encodeBirthData } from '@/lib/birthData';
 import { verifyToken } from '@/lib/tokenSigning';
 import { decryptToken, isEncryptedToken, encryptToken } from '@/lib/encryption';
@@ -10,16 +11,14 @@ interface ResultPageProps {
   searchParams: Promise<{ data?: string }>;
 }
 
-function formatPreviewDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
 function truncateCity(city: string, maxLen = 40): string {
   return city.length > maxLen ? city.slice(0, maxLen - 1) + '…' : city;
 }
 
 export default async function ResultPage({ searchParams }: ResultPageProps) {
   const { data } = await searchParams;
+  const locale = await getLocale();
+  const t = await getTranslations('result');
 
   const headersList = await headers();
   const host = headersList.get('host') ?? 'cicatriz.digital';
@@ -29,7 +28,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   if (!data) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-5">
-        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">No calendar data found.</p>
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">{t('noData')}</p>
         <Link href="/" className="text-xs uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground transition-colors">
           ← Cicatriz
         </Link>
@@ -42,12 +41,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   let resolvedToken: string;
   try {
     if (isEncryptedToken(data)) {
-      // New path: opaque encrypted token
       const payload = decryptToken(data);
       birthData = decodeBirthData(payload);
-      resolvedToken = data; // already encrypted, use as-is
+      resolvedToken = data;
     } else {
-      // Legacy path: HMAC-signed plaintext token — re-encrypt for the subscribe URL
       const { payload } = verifyToken(data);
       birthData = decodeBirthData(payload);
       resolvedToken = encryptToken(encodeBirthData(birthData));
@@ -56,12 +53,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   } catch {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-5">
-        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">
-          This calendar link appears to be damaged or expired.
-        </p>
-        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">
-          Re-enter your birth data to generate a new one, or go back to the result page if you saved it.
-        </p>
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">{t('damaged')}</p>
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">{t('reEnter')}</p>
         <Link href="/" className="text-xs uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground transition-colors">
           ← Cicatriz
         </Link>
@@ -71,15 +64,14 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   const subscribeUrl = `${appUrl}/api/ical?data=${resolvedToken}`;
 
-  // Compute preview events (server-side, no external calls)
   let previewEvents: Awaited<ReturnType<typeof getPreviewEvents>> = [];
   try {
     previewEvents = getPreviewEvents(birthData);
   } catch {
-    // Non-fatal — preview section simply won't render if computation fails
+    // Non-fatal
   }
 
-  const birthDateFormatted = new Date(birthData.date + 'T12:00:00Z').toLocaleDateString('en-US', {
+  const birthDateFormatted = new Date(birthData.date + 'T12:00:00Z').toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -95,7 +87,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
             ← Cicatriz
           </Link>
           <div className="pt-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 mb-1">Calendar ready</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 mb-1">{t('ready')}</p>
             <p className="text-foreground/50 text-xs">{birthData.name}</p>
           </div>
         </div>
@@ -103,12 +95,9 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         {/* Birth data confirmation card */}
         <div className="border border-foreground/10 px-3 py-3 space-y-2">
           <div className="flex items-baseline justify-between">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">Calendar for</p>
-            <Link
-              href="/"
-              className="text-[10px] uppercase tracking-[0.15em] text-foreground/30 hover:text-foreground/60 transition-colors"
-            >
-              ← edit
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">{t('calendarFor')}</p>
+            <Link href="/" className="text-[10px] uppercase tracking-[0.15em] text-foreground/30 hover:text-foreground/60 transition-colors">
+              {t('edit')}
             </Link>
           </div>
           <div>
@@ -123,7 +112,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           <div role="note" className="border border-foreground/10 px-3 py-2.5 flex gap-3">
             <span className="text-foreground/30 text-sm shrink-0" aria-hidden="true">☽</span>
             <p className="text-[10px] text-foreground/30 uppercase tracking-[0.12em] leading-relaxed">
-              No birth time — Moon transits estimated using solar noon
+              {t('noTime')}
             </p>
           </div>
         )}
@@ -131,12 +120,12 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         {/* Upcoming events preview */}
         {previewEvents.length > 0 && (
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">Upcoming</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">{t('upcoming')}</p>
             <div className="border border-foreground/10 divide-y divide-foreground/8">
               {previewEvents.map((event, i) => (
                 <div key={i} className="flex items-baseline gap-3 px-3 py-2">
                   <span className="text-[10px] text-foreground/50 font-mono shrink-0 w-10">
-                    {formatPreviewDate(event.startDate)}
+                    {event.startDate.toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
                   </span>
                   <span className="text-[10px] text-foreground/70 font-mono leading-snug">
                     {event.title}
@@ -152,7 +141,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
       <footer className="px-5 py-5 border-t border-foreground/8">
         <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
-          No account · No storage · Your data lives only in your URL
+          {t('footerNoStorage')}
         </p>
       </footer>
     </div>

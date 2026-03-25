@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface NominatimResult {
   place_id: number;
@@ -24,6 +25,7 @@ interface CitySearchProps {
 }
 
 export default function CitySearch({ onSelect }: CitySearchProps) {
+  const t = useTranslations('citySearch');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<NominatimResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +51,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
       setIsOpen(data.length > 0);
       setActiveIndex(-1);
     } catch {
-      setError('Search failed, try again');
+      setError(t('searchFailed'));
       setResults([]);
       setIsOpen(false);
     } finally {
@@ -80,7 +82,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
       onSelect(result.display_name, lat, lng, tzData.timezone);
     } catch {
       setQuery(previousQuery); // restore so form knows city isn't selected
-      setError('Timezone lookup failed — please try again');
+      setError(t('timezoneFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -109,8 +111,8 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
       <div className="relative">
         <input
           type="text" value={query} onChange={handleChange} onKeyDown={handleKeyDown}
-          placeholder="Search city…" autoComplete="off"
-          aria-label="Birth city" aria-expanded={isOpen} aria-haspopup="listbox"
+          placeholder={t('placeholder')} autoComplete="off"
+          aria-label={t('ariaLabel')} aria-expanded={isOpen} aria-haspopup="listbox"
           className="w-full bg-background border border-foreground/20 text-foreground placeholder:text-foreground/20 px-3 py-2 text-sm focus:outline-none focus:border-foreground/70 transition-colors pr-8"
         />
         {isLoading && (

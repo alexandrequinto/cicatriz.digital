@@ -1,7 +1,10 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import NatalChartForm from '@/components/NatalChartForm';
 
 export default function Home() {
+  const t = useTranslations('home');
+
   return (
     <div className="flex flex-col min-h-screen">
       <script
@@ -32,10 +35,10 @@ export default function Home() {
             Cicatriz
           </h1>
           <p className="text-xs text-foreground/35 mt-1 uppercase tracking-[0.25em]">
-            Marked by the cosmos
+            {t('tagline')}
           </p>
           <p className="text-xs text-foreground/25 mt-4 leading-relaxed">
-            Enter your birth data. Get a live calendar subscription with your personal planetary transits, lunar phases, and retrograde stations.
+            {t('description')}
           </p>
         </section>
 
@@ -44,10 +47,10 @@ export default function Home() {
 
       <footer className="px-5 py-5 border-t border-foreground/8 space-y-2">
         <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-center">
-          No account · No storage · Your data lives only in your URL
+          {t('footerNoStorage')}
         </p>
         <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center">
-          <Link href="/faq" className="hover:text-foreground/60 transition-colors">How it works →</Link>
+          <Link href="/faq" className="hover:text-foreground/60 transition-colors">{t('footerHowItWorks')}</Link>
         </p>
       </footer>
     </div>

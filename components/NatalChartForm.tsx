@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { track } from '@vercel/analytics';
 import CitySearch from '@/components/CitySearch';
 import { FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
@@ -15,17 +16,18 @@ interface FormErrors {
 const fieldLabel = 'block text-[10px] uppercase tracking-[0.2em] text-foreground/40 mb-1.5';
 const fieldInput = 'w-full bg-background border border-foreground/20 text-foreground text-sm px-3 py-2 focus:outline-none focus:border-foreground/70 transition-colors placeholder:text-foreground/20';
 
-const FILTER_OPTIONS = [
-  { bit: FILTER_BITS['outer-transit'], label: 'Slow transits ♄♃',       hint: 'Jupiter · Saturn · Uranus · Neptune · Pluto' },
-  { bit: FILTER_BITS['inner-transit'], label: 'Personal transits ☿♀',   hint: 'Sun · Mercury · Venus · Mars · frequent' },
-  { bit: FILTER_BITS['lunar'],         label: 'Lunar phases ☽',          hint: 'New Moon · Full Moon · quarters' },
-  { bit: FILTER_BITS['ingress'],       label: 'Sign ingresses ♈',        hint: 'Planets entering new signs' },
-  { bit: FILTER_BITS['retrograde'],    label: 'Retrograde stations ℞',   hint: '' },
-  { bit: FILTER_BITS['eclipse'],       label: 'Eclipses ◉',              hint: 'Solar & lunar eclipses' },
-] as const;
-
 export default function NatalChartForm() {
   const router = useRouter();
+  const t = useTranslations('form');
+
+  const FILTER_OPTIONS = [
+    { bit: FILTER_BITS['outer-transit'], label: t('filterOuterLabel'),     hint: t('filterOuterHint') },
+    { bit: FILTER_BITS['inner-transit'], label: t('filterInnerLabel'),     hint: t('filterInnerHint') },
+    { bit: FILTER_BITS['lunar'],         label: t('filterLunarLabel'),     hint: t('filterLunarHint') },
+    { bit: FILTER_BITS['ingress'],       label: t('filterIngressLabel'),   hint: t('filterIngressHint') },
+    { bit: FILTER_BITS['retrograde'],    label: t('filterRetrogradeLabel'), hint: '' },
+    { bit: FILTER_BITS['eclipse'],       label: t('filterEclipseLabel'),   hint: t('filterEclipseHint') },
+  ];
 
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
@@ -52,9 +54,9 @@ export default function NatalChartForm() {
 
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
-    if (!name.trim()) errs.name = 'Required';
-    if (!date) errs.date = 'Required';
-    if (!city || lat === null || lng === null || !tz) errs.city = 'Select a city from the results';
+    if (!name.trim()) errs.name = t('nameRequired');
+    if (!date) errs.date = t('birthDateRequired');
+    if (!city || lat === null || lng === null || !tz) errs.city = t('cityRequired');
     return errs;
   };
 
@@ -76,7 +78,7 @@ export default function NatalChartForm() {
         }),
       });
       if (!res.ok) {
-        setSubmitError('Something went wrong. Please try again.');
+        setSubmitError(t('submitError'));
         setIsSubmitting(false);
         return;
       }
@@ -84,7 +86,7 @@ export default function NatalChartForm() {
       track('form_submit');
       router.push('/result?data=' + token);
     } catch {
-      setSubmitError('Network error. Please try again.');
+      setSubmitError(t('networkError'));
       setIsSubmitting(false);
     }
   };
@@ -93,11 +95,11 @@ export default function NatalChartForm() {
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* Name */}
       <div>
-        <label htmlFor="name" className={fieldLabel}>Name</label>
+        <label htmlFor="name" className={fieldLabel}>{t('name')}</label>
         <input
           id="name" type="text" value={name}
           onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-          required autoComplete="given-name" placeholder="Your name"
+          required autoComplete="given-name" placeholder={t('namePlaceholder')}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
           className={fieldInput}
@@ -108,7 +110,7 @@ export default function NatalChartForm() {
       {/* Date + Time — stack on mobile, side-by-side on sm+ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-hidden">
         <div className="min-w-0">
-          <label htmlFor="date" className={fieldLabel}>Birth date</label>
+          <label htmlFor="date" className={fieldLabel}>{t('birthDate')}</label>
           <input
             id="date" type="date" value={date} max={today}
             onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: undefined })); }}
@@ -121,7 +123,7 @@ export default function NatalChartForm() {
 
         <div className="min-w-0">
           <label htmlFor="time" className={fieldLabel}>
-            Birth time <span className="text-foreground/20 normal-case tracking-normal">optional</span>
+            {t('birthTime')} <span className="text-foreground/20 normal-case tracking-normal">{t('birthTimeOptional')}</span>
           </label>
           <input
             id="time" type="time" value={time} disabled={unknownTime}
@@ -134,11 +136,11 @@ export default function NatalChartForm() {
               onChange={(e) => { setUnknownTime(e.target.checked); if (e.target.checked) setTime(''); }}
               className="w-3 h-3 accent-foreground"
             />
-            <span className="text-[10px] uppercase tracking-[0.15em] text-foreground/30">Unknown</span>
+            <span className="text-[10px] uppercase tracking-[0.15em] text-foreground/30">{t('birthTimeUnknown')}</span>
           </label>
           {unknownTime && (
             <p className="text-[10px] text-foreground/30 uppercase tracking-[0.12em] mt-2 leading-relaxed">
-              ☽ Moon transits will use solar noon as an approximation.
+              {t('moonWarning')}
             </p>
           )}
         </div>
@@ -146,7 +148,7 @@ export default function NatalChartForm() {
 
       {/* City */}
       <div>
-        <label className={fieldLabel}>Birth city</label>
+        <label className={fieldLabel}>{t('birthCity')}</label>
         <CitySearch onSelect={handleCitySelect} />
         {errors.city && <p id="city-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.city}</p>}
       </div>
@@ -156,7 +158,7 @@ export default function NatalChartForm() {
 
       {/* Filters */}
       <div>
-        <p className={fieldLabel}>Include in calendar</p>
+        <p className={fieldLabel}>{t('include')}</p>
         <div className="space-y-3 mt-2">
           {FILTER_OPTIONS.map(({ bit, label, hint }) => {
             const checked = (filters & bit) !== 0;
@@ -178,7 +180,7 @@ export default function NatalChartForm() {
         </div>
         {filters === 0 && (
           <p className="mt-3 text-[10px] text-foreground/40 uppercase tracking-widest">
-            No types selected — calendar will be empty
+            {t('noTypes')}
           </p>
         )}
       </div>
@@ -191,7 +193,7 @@ export default function NatalChartForm() {
         type="submit" disabled={isSubmitting}
         className="w-full bg-foreground text-background text-xs uppercase tracking-[0.2em] py-3 hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? 'Generating…' : 'Generate calendar'}
+        {isSubmitting ? t('submitting') : t('submit')}
       </button>
     </form>
   );
