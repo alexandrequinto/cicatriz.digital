@@ -33,14 +33,20 @@ export default function Home() {
           <p className="text-xs text-white/35 mt-1 uppercase tracking-[0.25em]">
             Marked by the cosmos
           </p>
+          <p className="text-xs text-white/25 mt-4 leading-relaxed">
+            Enter your birth data. Get a live calendar subscription with your personal planetary transits, lunar phases, and retrograde stations.
+          </p>
         </section>
 
         <NatalChartForm />
       </main>
 
-      <footer className="px-5 py-5 border-t border-white/8">
+      <footer className="px-5 py-5 border-t border-white/8 space-y-2">
         <p className="text-[10px] text-white/25 uppercase tracking-widest text-center">
           No account · No storage · Your data lives only in your URL
+        </p>
+        <p className="text-[10px] text-white/20 uppercase tracking-widest text-center leading-relaxed">
+          Birth data is encoded in the URL — nothing is stored on any server · Calendar computed fresh on every request · No cookies · Delete the URL and your data is gone
         </p>
       </footer>
     </div>
