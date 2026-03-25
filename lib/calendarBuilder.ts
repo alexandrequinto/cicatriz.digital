@@ -18,12 +18,12 @@ export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHas
 
   const allDayCategories = new Set<TransitEvent['category']>(['outer-transit', 'inner-transit', 'lunar', 'ingress', 'retrograde']);
 
-  const CATEGORY_COLORS: Record<TransitEvent['category'], { rfc: string; apple: string }> = {
-    'outer-transit': { rfc: 'steelblue',  apple: '#4682B4' },
-    'inner-transit': { rfc: 'teal',       apple: '#20B2AA' },
-    'lunar':         { rfc: 'slategray',  apple: '#708090' },
-    'ingress':       { rfc: 'seagreen',   apple: '#2E8B57' },
-    'retrograde':    { rfc: 'crimson',    apple: '#DC143C' },
+  const CATEGORY_COLORS: Record<TransitEvent['category'], string> = {
+    'outer-transit': '#4682B4',
+    'inner-transit': '#20B2AA',
+    'lunar':         '#708090',
+    'ingress':       '#2E8B57',
+    'retrograde':    '#DC143C',
   };
 
   for (const event of events) {
@@ -41,11 +41,7 @@ export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHas
       transparency: ICalEventTransparency.TRANSPARENT,
       id: uid,
     });
-    const colors = CATEGORY_COLORS[event.category];
-    ev.x([
-      { key: 'COLOR', value: colors.rfc },
-      { key: 'X-APPLE-CALENDAR-COLOR', value: colors.apple },
-    ]);
+    ev.x('X-APPLE-CALENDAR-COLOR', CATEGORY_COLORS[event.category]);
   }
 
   return cal;
