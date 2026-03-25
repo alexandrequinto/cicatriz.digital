@@ -24,6 +24,7 @@ const INGRESS_PLANETS = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', '
 const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
 const RETROGRADE_PLANETS = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
 const LUNAR_PHASES = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'];
+const MOON_INGRESS_PHASES = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
 
 function buildAllKeys(): string[] {
   const keys: string[] = [];
@@ -44,6 +45,11 @@ function buildAllKeys(): string[] {
   for (const planet of INGRESS_PLANETS)
     for (const sign of SIGNS)
       keys.push(`${planet}|ingress|${sign}`);
+
+  // Moon ingress × phase: 12 × 8 = 96
+  for (const sign of SIGNS)
+    for (const phase of MOON_INGRESS_PHASES)
+      keys.push(`Moon|ingress|${sign}|${phase}`);
 
   // Retrograde/direct: 5 × 2 = 10
   for (const planet of RETROGRADE_PLANETS) {
@@ -76,6 +82,7 @@ Guidelines:
 - Avoid clichés like "the universe is telling you" or "the stars align."
 - For transit keys ("Planet|aspect|natalPlanet"): describe what this transit typically brings for a person with that natal placement.
 - For ingress keys ("Planet|ingress|Sign"): describe the general atmosphere while this planet is in that sign.
+- For Moon ingress+phase keys ("Moon|ingress|Sign|Phase"): describe what it feels like when the Moon moves into that sign specifically during that lunar phase. The phase shapes the quality — initiating (New), building (Waxing Crescent, First Quarter, Waxing Gibbous), peak/release (Full), releasing/integrating (Waning Gibbous, Last Quarter, Waning Crescent). Be specific about how the phase modifies the sign's expression.
 - For retrograde/direct keys ("Planet|retrograde" or "Planet|direct"): describe the station event and what to expect.
 - For lunar keys ("New Moon", "Full Moon", etc.): describe the general quality of that phase.
 
