@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import NatalChartForm from '@/components/NatalChartForm';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const t = useTranslations('home');
@@ -49,16 +49,7 @@ export default function Home() {
         <NatalChartForm />
       </main>
 
-      <footer className="px-5 py-5 border-t border-foreground/8 space-y-2">
-        <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-center">
-          {t('footerNoStorage')}
-        </p>
-        <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center space-x-4">
-          <Link href="/faq" className="hover:text-foreground/60 transition-colors">{t('footerHowItWorks')}</Link>
-          <Link href="/privacy" className="hover:text-foreground/60 transition-colors">{t('footerPrivacy')}</Link>
-          <a href="mailto:feedback@cicatriz.digital" className="hover:text-foreground/60 transition-colors">{t('footerFeedback')}</a>
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+import Footer from '@/components/Footer';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -30,7 +31,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function FaqPage() {
   const t = useTranslations('faq');
-  const tResult = useTranslations('result');
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -65,6 +65,14 @@ export default function FaqPage() {
           <QA q={t('q8')}><p>{t('a8')}</p></QA>
           <QA q={t('q9')}><p>{t('a9')}</p></QA>
           <QA q={t('q10')}><p>{t('a10')}</p></QA>
+          <QA q={t('qSource')}>
+            <p>
+              {t('aSource')}{' '}
+              <a href="https://github.com/alexandrequinto/cicatriz.digital" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground/80 transition-colors">
+                github.com/alexandrequinto/cicatriz.digital
+              </a>
+            </p>
+          </QA>
         </Section>
 
         <Section title={t('s3Title')}>
@@ -81,11 +89,7 @@ export default function FaqPage() {
 
       </main>
 
-      <footer className="px-5 py-5 border-t border-foreground/8">
-        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
-          {tResult('footerNoStorage')}
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

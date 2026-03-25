@@ -5,7 +5,8 @@
     "footerNoStorage": "Sem conta · Sem armazenamento · Seus dados vivem apenas na URL",
     "footerHowItWorks": "Como funciona →",
     "footerFeedback": "Feedback →",
-    "footerPrivacy": "Privacidade →"
+    "footerPrivacy": "Privacidade →",
+    "footerSource": "Código-fonte →"
   },
   "meta": {
     "title": "Cicatriz — Marcado pelo cosmos",
@@ -118,6 +119,8 @@
     "a9": "Sim. Remova a assinatura do calendário do seu app e descarte a URL da página de resultado. Como nada é armazenado do nosso lado, não há nada para solicitar exclusão — tudo some quando a URL some.",
     "q10": "Minha hora de nascimento é obrigatória?",
     "a10": "Não. Se você não sabe sua hora de nascimento, marque a caixa Desconhecida. Os trânsitos lunares serão estimados usando o meio-dia solar no seu local de nascimento — eles aparecerão no calendário, mas o horário é aproximado.",
+    "qSource": "Posso verificar tudo isso?",
+    "aSource": "Sim. O Cicatriz é open source sob a licença GPL v3 — você pode ler e auditar o código completo no GitHub.",
     "s3Title": "Descrições dos eventos",
     "q11": "As descrições dos eventos são personalizadas?",
     "a11": "Os eventos são personalizados — quais trânsitos aparecem e quando depende inteiramente do seu mapa natal. As descrições não são. Cada tipo de trânsito (ex: Saturno em quadratura com Vênus natal) tem uma interpretação fixa escrita com antecedência. O mesmo texto aparece para todos que têm esse trânsito ativo.",
@@ -147,7 +150,8 @@
     "s3Title": "Serviços de terceiros",
     "s3p1": "Usamos a Vercel para hospedar a aplicação. A Vercel pode registrar metadados padrão de requisições HTTP (endereço IP, agente de usuário, data/hora) como parte da operação normal da infraestrutura. Veja vercel.com/legal/privacy-policy para detalhes.",
     "s3p2": "A busca de cidades usa a API Nominatim (OpenStreetMap), que recebe a sua consulta de cidade digitada. Nenhum dado de nascimento é enviado ao Nominatim. Também usamos o Vercel Analytics para contar visualizações de página agregadas e eventos personalizados (envios de formulário, assinaturas de calendário). Nenhum identificador pessoal é coletado.",
-    "s4Title": "Contato",
-    "s4p1": "Dúvidas sobre privacidade? Escreva para feedback@cicatriz.digital."
+    "s4Title": "Contato e código-fonte",
+    "s4p1": "Dúvidas sobre privacidade? Escreva para feedback@cicatriz.digital.",
+    "s4p2": "O Cicatriz é open source sob a licença GPL v3. Você pode ler, auditar e executar o código por conta própria."
   }
 }

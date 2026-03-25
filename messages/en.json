@@ -5,7 +5,8 @@
     "footerNoStorage": "No account · No storage · Your data lives only in your URL",
     "footerHowItWorks": "How it works →",
     "footerFeedback": "Feedback →",
-    "footerPrivacy": "Privacy →"
+    "footerPrivacy": "Privacy →",
+    "footerSource": "Source →"
   },
   "meta": {
     "title": "Cicatriz — Marked by the cosmos",
@@ -118,6 +119,8 @@
     "a9": "Yes. Remove the calendar subscription from your app and discard the result page URL. Since nothing is stored on our end, there is nothing to request deletion of — it's gone when the URL is gone.",
     "q10": "Is my birth time required?",
     "a10": "No. If you don't know your birth time, check the Unknown box. Moon transits will be estimated using solar noon at your birth location — they'll appear in the calendar but their timing is approximate.",
+    "qSource": "Can I verify any of this?",
+    "aSource": "Yes. Cicatriz is open source under the GPL v3 license — you can read and audit the full codebase on GitHub.",
     "s3Title": "Event descriptions",
     "q11": "Are the event descriptions personalized?",
     "a11": "The events are personalized — which transits appear and when depends entirely on your natal chart. The descriptions are not. Each transit type (e.g. Saturn square natal Venus) has a fixed interpretation written in advance. The same text appears for everyone with that transit active.",
@@ -147,7 +150,8 @@
     "s3Title": "Third-party services",
     "s3p1": "We use Vercel to host the application. Vercel may log standard HTTP request metadata (IP address, user agent, timestamp) as part of normal infrastructure operation. See vercel.com/legal/privacy-policy for details.",
     "s3p2": "City search uses the Nominatim API (OpenStreetMap), which receives your typed city query. No birth data is sent to Nominatim. We also use Vercel Analytics to count aggregate page views and custom events (form submissions, calendar subscriptions). No personal identifiers are collected.",
-    "s4Title": "Contact",
-    "s4p1": "Questions about privacy? Write to feedback@cicatriz.digital."
+    "s4Title": "Contact & source",
+    "s4p1": "Questions about privacy? Write to feedback@cicatriz.digital.",
+    "s4p2": "Cicatriz is open source under the GPL v3 license. You can read, audit, and run the code yourself."
   }
 }

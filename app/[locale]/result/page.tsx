@@ -6,6 +6,7 @@ import { verifyToken } from '@/lib/tokenSigning';
 import { decryptToken, isEncryptedToken, encryptToken } from '@/lib/encryption';
 import { getPreviewEvents } from '@/lib/previewEvents';
 import SubscribeUrl from '@/components/SubscribeUrl';
+import Footer from '@/components/Footer';
 
 interface ResultPageProps {
   searchParams: Promise<{ data?: string }>;
@@ -139,11 +140,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         <SubscribeUrl subscribeUrl={subscribeUrl} name={birthData.name} />
       </main>
 
-      <footer className="px-5 py-5 border-t border-foreground/8">
-        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
-          {t('footerNoStorage')}
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }
