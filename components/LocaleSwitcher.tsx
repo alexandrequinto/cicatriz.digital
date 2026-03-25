@@ -1,6 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 
 const LOCALES = [
@@ -9,20 +8,14 @@ const LOCALES = [
 ];
 
 export default function LocaleSwitcher() {
-  const pathname = usePathname();
   const locale = useLocale();
-
-  const hrefFor = (code: string) => {
-    const withoutLocale = pathname.replace(/^\/pt-BR/, '') || '/';
-    return code === 'en' ? withoutLocale : '/pt-BR' + withoutLocale;
-  };
 
   return (
     <div className="relative flex items-center gap-3 justify-end z-10">
       {LOCALES.map(({ code, flag, label }) => (
         <a
           key={code}
-          href={hrefFor(code)}
+          href={`/${code}`}
           className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition-colors cursor-pointer ${
             locale === code
               ? 'text-foreground/60 pointer-events-none'
