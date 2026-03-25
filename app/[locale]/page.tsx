@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import NatalChartForm from '@/components/NatalChartForm';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 export default function Home() {
   const t = useTranslations('home');
@@ -24,6 +25,8 @@ export default function Home() {
       />
 
       <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-10">
+        <LocaleSwitcher />
+
         {/* Hero */}
         <section>
           <div className="flex gap-3 mb-5 select-none" aria-hidden="true">
