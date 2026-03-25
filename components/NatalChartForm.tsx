@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { track } from '@vercel/analytics';
 import CitySearch from '@/components/CitySearch';
 import { FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
@@ -18,6 +18,8 @@ const fieldInput = 'w-full bg-background border border-foreground/20 text-foregr
 
 export default function NatalChartForm() {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations('form');
 
   const FILTER_OPTIONS = [
@@ -74,7 +76,7 @@ export default function NatalChartForm() {
         body: JSON.stringify({
           name: name.trim(), date,
           time: unknownTime || !time ? null : time,
-          lat, lng, tz, city, filters,
+          lat, lng, tz, city, filters, locale,
         }),
       });
       if (!res.ok) {
@@ -188,6 +190,24 @@ export default function NatalChartForm() {
       {submitError && (
         <p role="alert" className="text-[10px] text-foreground/50 uppercase tracking-widest">{submitError}</p>
       )}
+
+      <div className="flex gap-2 items-center justify-end">
+        <button
+          type="button"
+          onClick={() => router.replace(pathname.replace(/^\/pt-BR/, '') || '/')}
+          className={`text-[10px] uppercase tracking-widest ${locale === 'en' ? 'text-foreground/60' : 'text-foreground/20 hover:text-foreground/40'}`}
+        >
+          {t('localeEn')}
+        </button>
+        <span className="text-[10px] text-foreground/20">/</span>
+        <button
+          type="button"
+          onClick={() => router.replace('/pt-BR' + pathname.replace(/^\/pt-BR/, ''))}
+          className={`text-[10px] uppercase tracking-widest ${locale === 'pt-BR' ? 'text-foreground/60' : 'text-foreground/20 hover:text-foreground/40'}`}
+        >
+          {t('localePtBr')}
+        </button>
+      </div>
 
       <button
         type="submit" disabled={isSubmitting}

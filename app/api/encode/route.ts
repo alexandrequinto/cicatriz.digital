@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     return new Response('Invalid request body', { status: 400 });
   }
 
-  const { name, date, time, lat, lng, tz, city, filters } = body as Record<string, unknown>;
+  const { name, date, time, lat, lng, tz, city, filters, locale } = body as Record<string, unknown>;
 
   if (!name || typeof name !== 'string' || !name.trim()) {
     return new Response('Missing name', { status: 400 });
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
       tz: tz as string,
       city: city as string,
       filters: filters as number | undefined,
+      locale: typeof locale === 'string' ? locale : undefined,
     });
     const token = encryptToken(payload);
     return Response.json({ token });

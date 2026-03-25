@@ -9,6 +9,7 @@ type Payload = {
   z: string;
   c: string;
   f?: number; // event category filter bitmask (absent = all enabled)
+  l?: string; // locale (omitted for 'en' to keep tokens backward-compatible)
 };
 
 export const FILTER_BITS = {
@@ -44,6 +45,10 @@ export function encodeBirthData(data: BirthData): string {
   if (data.filters != null && data.filters !== ALL_FILTERS) {
     payload.f = data.filters;
   }
+  // Only encode locale for non-English (keeps tokens backward-compatible)
+  if (data.locale && data.locale !== 'en') {
+    payload.l = data.locale;
+  }
   return toBase64url(Buffer.from(JSON.stringify(payload)));
 }
 
@@ -66,6 +71,7 @@ export function decodeBirthData(payload: string): BirthData {
       tz: p.z,
       city: p.c,
       filters: p.f,
+      locale: p.l,
     };
   } catch {
     throw new Error('Invalid token');

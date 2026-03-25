@@ -44,7 +44,10 @@
     "filterIngressHint": "Planets entering new signs",
     "filterRetrogradeLabel": "Retrograde stations ℞",
     "filterEclipseLabel": "Eclipses ◉",
-    "filterEclipseHint": "Solar & lunar eclipses"
+    "filterEclipseHint": "Solar & lunar eclipses",
+    "language": "Language",
+    "localeEn": "EN",
+    "localePtBr": "PT-BR"
   },
   "citySearch": {
     "placeholder": "Search city…",

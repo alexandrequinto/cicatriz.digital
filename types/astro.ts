@@ -10,6 +10,7 @@ export interface BirthData {
   // bit 0 (1): outer-transit, bit 1 (2): inner-transit, bit 2 (4): lunar,
   // bit 3 (8): ingress, bit 4 (16): retrograde, bit 5 (32): eclipse. All enabled = 63.
   filters?: number;
+  locale?: string;
 }
 
 export interface NatalPlanet {

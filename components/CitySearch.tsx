@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface NominatimResult {
   place_id: number;
@@ -26,6 +26,7 @@ interface CitySearchProps {
 
 export default function CitySearch({ onSelect }: CitySearchProps) {
   const t = useTranslations('citySearch');
+  const locale = useLocale();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<NominatimResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +44,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'cicatriz-digital' } }
+        { headers: { 'User-Agent': 'cicatriz-digital', 'Accept-Language': locale } }
       );
       if (!res.ok) throw new Error();
       const data: NominatimResult[] = await res.json();
@@ -57,7 +58,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [locale, t]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
