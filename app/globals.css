@@ -3,6 +3,15 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    color-scheme: light;
+  }
 }
 
 @theme inline {

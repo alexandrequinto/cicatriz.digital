@@ -28,8 +28,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   if (!data) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-5">
-        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">No calendar data found.</p>
-        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors">
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">No calendar data found.</p>
+        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground transition-colors">
           ← Cicatriz
         </Link>
       </div>
@@ -45,13 +45,13 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   } catch {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-5">
-        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">
           This calendar link appears to be damaged or expired.
         </p>
-        <p className="text-white/30 text-xs uppercase tracking-widest mb-4">
+        <p className="text-foreground/30 text-xs uppercase tracking-widest mb-4">
           Re-enter your birth data to generate a new one, or go back to the result page if you saved it.
         </p>
-        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors">
+        <Link href="/" className="text-xs uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground transition-colors">
           ← Cicatriz
         </Link>
       </div>
@@ -83,38 +83,38 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-8">
         <div className="space-y-1">
-          <Link href="/" className="text-[10px] uppercase tracking-[0.2em] text-white/25 hover:text-white/60 transition-colors">
+          <Link href="/" className="text-[10px] uppercase tracking-[0.2em] text-foreground/25 hover:text-foreground/60 transition-colors">
             ← Cicatriz
           </Link>
           <div className="pt-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 mb-1">Calendar ready</p>
-            <p className="text-white/50 text-xs">{birthData.name}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 mb-1">Calendar ready</p>
+            <p className="text-foreground/50 text-xs">{birthData.name}</p>
           </div>
         </div>
 
         {/* Birth data confirmation card */}
-        <div className="border border-white/10 px-3 py-3 space-y-2">
+        <div className="border border-foreground/10 px-3 py-3 space-y-2">
           <div className="flex items-baseline justify-between">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/35">Calendar for</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">Calendar for</p>
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-[0.15em] text-white/30 hover:text-white/60 transition-colors"
+              className="text-[10px] uppercase tracking-[0.15em] text-foreground/30 hover:text-foreground/60 transition-colors"
             >
               ← edit
             </Link>
           </div>
           <div>
-            <p className="text-xs text-white/70 font-mono">{birthData.name}</p>
-            <p className="text-[10px] text-white/50 font-mono mt-0.5">
+            <p className="text-xs text-foreground/70 font-mono">{birthData.name}</p>
+            <p className="text-[10px] text-foreground/50 font-mono mt-0.5">
               {birthDateFormatted} · {timeLabel} · {cityLabel}
             </p>
           </div>
         </div>
 
         {noTime && (
-          <div role="note" className="border border-white/10 px-3 py-2.5 flex gap-3">
-            <span className="text-white/30 text-sm shrink-0" aria-hidden="true">☽</span>
-            <p className="text-[10px] text-white/30 uppercase tracking-[0.12em] leading-relaxed">
+          <div role="note" className="border border-foreground/10 px-3 py-2.5 flex gap-3">
+            <span className="text-foreground/30 text-sm shrink-0" aria-hidden="true">☽</span>
+            <p className="text-[10px] text-foreground/30 uppercase tracking-[0.12em] leading-relaxed">
               No birth time — Moon transits estimated using solar noon
             </p>
           </div>
@@ -123,14 +123,14 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         {/* Upcoming events preview */}
         {previewEvents.length > 0 && (
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/35">Upcoming</p>
-            <div className="border border-white/10 divide-y divide-white/8">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">Upcoming</p>
+            <div className="border border-foreground/10 divide-y divide-foreground/8">
               {previewEvents.map((event, i) => (
                 <div key={i} className="flex items-baseline gap-3 px-3 py-2">
-                  <span className="text-[10px] text-white/50 font-mono shrink-0 w-10">
+                  <span className="text-[10px] text-foreground/50 font-mono shrink-0 w-10">
                     {formatPreviewDate(event.startDate)}
                   </span>
-                  <span className="text-[10px] text-white/70 font-mono leading-snug">
+                  <span className="text-[10px] text-foreground/70 font-mono leading-snug">
                     {event.title}
                   </span>
                 </div>
@@ -142,8 +142,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         <SubscribeUrl subscribeUrl={subscribeUrl} name={birthData.name} />
       </main>
 
-      <footer className="px-5 py-5 border-t border-white/8">
-        <p className="text-[10px] text-white/20 uppercase tracking-widest text-center">
+      <footer className="px-5 py-5 border-t border-foreground/8">
+        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
           No account · No storage · Your data lives only in your URL
         </p>
       </footer>
