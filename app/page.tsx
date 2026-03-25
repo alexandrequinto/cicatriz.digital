@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import NatalChartForm from '@/components/NatalChartForm';
 
 export default function Home() {
@@ -47,6 +48,9 @@ export default function Home() {
         </p>
         <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center leading-relaxed">
           Birth data is encoded in the URL — nothing is stored on any server · Calendar computed fresh on every request · No cookies · Delete the URL and your data is gone
+        </p>
+        <p className="text-[10px] text-foreground/20 uppercase tracking-widest text-center">
+          <Link href="/faq" className="hover:text-foreground/50 transition-colors">How it works →</Link>
         </p>
       </footer>
     </div>
