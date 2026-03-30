@@ -6,7 +6,19 @@
     "footerHowItWorks": "Como funciona →",
     "footerFeedback": "Feedback →",
     "footerPrivacy": "Privacidade →",
-    "footerSource": "Código-fonte →"
+    "footerSource": "Código-fonte →",
+    "footerNow": "O céu agora →",
+    "headerNow": "O céu agora"
+  },
+  "now": {
+    "pageTitle": "O céu agora",
+    "pageDescription": "Posições planetárias atuais, aspectos ativos e fase lunar.",
+    "title": "O céu agora",
+    "asOf": "Em",
+    "lunarPhase": "Lua",
+    "planets": "Planetas",
+    "aspects": "Aspectos",
+    "noAspects": "Nenhum aspecto maior em orbe"
   },
   "meta": {
     "title": "Cicatriz — Marcado pelo cosmos",

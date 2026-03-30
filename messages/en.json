@@ -6,7 +6,19 @@
     "footerHowItWorks": "How it works →",
     "footerFeedback": "Feedback →",
     "footerPrivacy": "Privacy →",
-    "footerSource": "Source →"
+    "footerSource": "Source →",
+    "footerNow": "The sky now →",
+    "headerNow": "The sky now"
+  },
+  "now": {
+    "pageTitle": "The sky now",
+    "pageDescription": "Current planetary positions, active aspects, and lunar phase.",
+    "title": "The sky now",
+    "asOf": "As of",
+    "lunarPhase": "Moon",
+    "planets": "Planets",
+    "aspects": "Aspects",
+    "noAspects": "No major aspects in orb"
   },
   "meta": {
     "title": "Cicatriz — Marked by the cosmos",
