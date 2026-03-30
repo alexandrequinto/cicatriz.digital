@@ -10,6 +10,7 @@ export default function Footer() {
         {t('footerNoStorage')}
       </p>
       <p className="text-[10px] text-foreground/30 uppercase tracking-widest text-center space-x-4">
+        <Link href="/now" className="hover:text-foreground/60 transition-colors">{t('footerNow')}</Link>
         <Link href="/faq" className="hover:text-foreground/60 transition-colors">{t('footerHowItWorks')}</Link>
         <Link href="/privacy" className="hover:text-foreground/60 transition-colors">{t('footerPrivacy')}</Link>
         <a href="mailto:feedback@cicatriz.digital" className="hover:text-foreground/60 transition-colors">{t('footerFeedback')}</a>
