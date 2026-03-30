@@ -2,13 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import Footer from '@/components/Footer';
+import ZodiacWheel from '@/components/ZodiacWheel';
 import {
   getSkySnapshot,
   getLocalizedSignName,
   getSignSymbol,
-  SIGN_SYMBOLS,
   EN_SIGNS,
-  type PlanetPosition,
 } from '@/lib/skySnapshot';
 import { getCalStrings } from '@/lib/i18n/calendarStrings';
 
@@ -18,134 +17,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'now' });
   return { title: t('pageTitle'), description: t('pageDescription') };
-}
-
-// --- SVG Zodiac Wheel ---
-
-const CX = 140;
-const CY = 140;
-const R_OUTER = 126;   // outer border
-const R_SIGN_INNER = 108; // inner edge of sign ring
-const R_SIGN_GLYPH = 117; // sign glyph position
-const R_PLANET = 82;   // planet glyph position
-const R_CENTER_DOT = 4;
-
-function lonToXY(lon: number, r: number): { x: number; y: number } {
-  // 0° Aries at top (12 o'clock), increasing clockwise
-  const rad = ((lon - 90) * Math.PI) / 180;
-  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
-}
-
-interface WheelPosition extends PlanetPosition {
-  localizedName: string;
-  localizedSign: string;
-}
-
-function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]; localizedSigns: string[] }) {
-  const signLines = Array.from({ length: 12 }, (_, i) => {
-    const angle = i * 30;
-    const outer = lonToXY(angle, R_OUTER);
-    const inner = lonToXY(angle, R_SIGN_INNER);
-    return { outer, inner };
-  });
-
-  const signGlyphs = SIGN_SYMBOLS.map((sym, i) => {
-    const angle = i * 30 + 15;
-    const { x, y } = lonToXY(angle, R_SIGN_GLYPH);
-    return { sym, x, y, name: localizedSigns[i] };
-  });
-
-  return (
-    // Wrapper is exactly 280×280 — same as the SVG — so pixel coords map 1:1
-    <div className="relative mx-auto" style={{ width: 280, height: 280 }}>
-      <svg
-        viewBox="0 0 280 280"
-        width="280"
-        height="280"
-        aria-hidden="true"
-        className="select-none"
-      >
-        {/* Outer ring */}
-        <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="1" />
-        {/* Sign ring inner boundary */}
-        <circle cx={CX} cy={CY} r={R_SIGN_INNER} fill="none" stroke="currentColor" strokeOpacity="0.07" strokeWidth="0.75" />
-        {/* Planet area inner boundary */}
-        <circle cx={CX} cy={CY} r={48} fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="0.75" />
-
-        {/* Sign dividers */}
-        {signLines.map(({ outer, inner }, i) => (
-          <line
-            key={i}
-            x1={inner.x} y1={inner.y}
-            x2={outer.x} y2={outer.y}
-            stroke="currentColor"
-            strokeOpacity="0.12"
-            strokeWidth="0.75"
-          />
-        ))}
-
-        {/* Sign glyphs */}
-        {signGlyphs.map(({ sym, x, y }, i) => (
-          <text
-            key={i}
-            x={x} y={y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize="9"
-            fill="currentColor"
-            fillOpacity="0.25"
-          >
-            {sym}
-          </text>
-        ))}
-
-        {/* Planet glyphs */}
-        {positions.map(({ planet, symbol, longitude, isRetrograde }) => {
-          const { x, y } = lonToXY(longitude, R_PLANET);
-          return (
-            <text
-              key={planet}
-              x={x} y={y}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="11"
-              fill="currentColor"
-              fillOpacity={isRetrograde ? 0.4 : 0.75}
-            >
-              {symbol}
-            </text>
-          );
-        })}
-
-        {/* Center dot */}
-        <circle cx={CX} cy={CY} r={R_CENTER_DOT} fill="currentColor" fillOpacity="0.08" />
-      </svg>
-
-      {/* HTML tooltip overlays — SVG <title> is broken in Chrome */}
-
-      {signGlyphs.map(({ x, y, name }, i) => (
-        <span
-          key={i}
-          title={name}
-          className="absolute -translate-x-1/2 -translate-y-1/2 cursor-default"
-          style={{ left: x, top: y, width: 18, height: 18 }}
-        />
-      ))}
-
-      {positions.map(({ planet, longitude, isRetrograde, localizedName, localizedSign, degree, minute }) => {
-        const { x, y } = lonToXY(longitude, R_PLANET);
-        const tooltip = `${localizedName}${isRetrograde ? ' ℞' : ''} · ${localizedSign} ${degree}°${minute.toString().padStart(2, '0')}′`;
-        return (
-          <span
-            key={planet}
-            title={tooltip}
-            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-default"
-            style={{ left: x, top: y, width: 22, height: 22 }}
-          />
-        );
-      })}
-    </div>
-  );
 }
 
 // --- Helpers ---
