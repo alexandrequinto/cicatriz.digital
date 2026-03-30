@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { useTranslations } from 'next-intl';
 import Footer from '@/components/Footer';
 import {
   getSkySnapshot,
@@ -10,8 +9,6 @@ import {
   SIGN_SYMBOLS,
   EN_SIGNS,
   type PlanetPosition,
-  type SkyAspect,
-  type LunarPhaseNow,
 } from '@/lib/skySnapshot';
 import { getCalStrings } from '@/lib/i18n/calendarStrings';
 
@@ -39,7 +36,12 @@ function lonToXY(lon: number, r: number): { x: number; y: number } {
   return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
 }
 
-function ZodiacWheel({ positions }: { positions: PlanetPosition[] }) {
+interface WheelPosition extends PlanetPosition {
+  localizedName: string;
+  localizedSign: string;
+}
+
+function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]; localizedSigns: string[] }) {
   const signLines = Array.from({ length: 12 }, (_, i) => {
     const angle = i * 30;
     const outer = lonToXY(angle, R_OUTER);
@@ -50,7 +52,7 @@ function ZodiacWheel({ positions }: { positions: PlanetPosition[] }) {
   const signGlyphs = SIGN_SYMBOLS.map((sym, i) => {
     const angle = i * 30 + 15;
     const { x, y } = lonToXY(angle, R_SIGN_GLYPH);
-    return { sym, x, y };
+    return { sym, x, y, name: localizedSigns[i] };
   });
 
   return (
@@ -59,7 +61,7 @@ function ZodiacWheel({ positions }: { positions: PlanetPosition[] }) {
       width="280"
       height="280"
       aria-hidden="true"
-      className="mx-auto select-none"
+      className="mx-auto select-none cursor-default"
     >
       {/* Outer ring */}
       <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="1" />
@@ -81,35 +83,40 @@ function ZodiacWheel({ positions }: { positions: PlanetPosition[] }) {
       ))}
 
       {/* Sign glyphs */}
-      {signGlyphs.map(({ sym, x, y }, i) => (
-        <text
-          key={i}
-          x={x} y={y}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="9"
-          fill="currentColor"
-          fillOpacity="0.25"
-        >
-          {sym}
-        </text>
-      ))}
-
-      {/* Planet glyphs */}
-      {positions.map(({ planet, symbol, longitude, isRetrograde }) => {
-        const { x, y } = lonToXY(longitude, R_PLANET);
-        return (
+      {signGlyphs.map(({ sym, x, y, name }, i) => (
+        <g key={i} style={{ cursor: 'default' }}>
+          <title>{name}</title>
           <text
-            key={planet}
             x={x} y={y}
             textAnchor="middle"
             dominantBaseline="central"
-            fontSize="11"
+            fontSize="9"
             fill="currentColor"
-            fillOpacity={isRetrograde ? 0.4 : 0.75}
+            fillOpacity="0.25"
           >
-            {symbol}
+            {sym}
           </text>
+        </g>
+      ))}
+
+      {/* Planet glyphs */}
+      {positions.map(({ planet, symbol, longitude, isRetrograde, localizedName, localizedSign, degree, minute }) => {
+        const { x, y } = lonToXY(longitude, R_PLANET);
+        const tooltip = `${localizedName}${isRetrograde ? ' ℞' : ''} · ${localizedSign} ${degree}°${minute.toString().padStart(2, '0')}′`;
+        return (
+          <g key={planet} style={{ cursor: 'default' }}>
+            <title>{tooltip}</title>
+            <text
+              x={x} y={y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize="11"
+              fill="currentColor"
+              fillOpacity={isRetrograde ? 0.4 : 0.75}
+            >
+              {symbol}
+            </text>
+          </g>
         );
       })}
 
@@ -156,6 +163,12 @@ export default async function NowPage({ params }: NowPageProps) {
 
   const utcString = now.toUTCString().replace(' GMT', ' UTC');
 
+  const wheelPositions = snapshot.positions.map((p) => ({
+    ...p,
+    localizedName: strings.planets[p.planet] ?? p.planet,
+    localizedSign: getLocalizedSignName(p.signKey, locale),
+  }));
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 w-full max-w-sm mx-auto px-5 pt-12 pb-10 space-y-10">
@@ -175,7 +188,7 @@ export default async function NowPage({ params }: NowPageProps) {
 
         {/* Zodiac Wheel */}
         <section>
-          <ZodiacWheel positions={snapshot.positions} />
+          <ZodiacWheel positions={wheelPositions} localizedSigns={strings.signs} />
         </section>
 
         {/* Lunar phase */}
