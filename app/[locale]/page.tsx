@@ -34,12 +34,7 @@ export default function Home() {
                 <span key={s} className="text-xl text-foreground/20 leading-none">{s}</span>
               ))}
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/now" className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-foreground/60 transition-colors">
-                {t('headerNow')}
-              </Link>
-              <LocaleSwitcher />
-            </div>
+            <LocaleSwitcher />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
             Cicatriz
@@ -50,6 +45,9 @@ export default function Home() {
           <p className="text-xs text-foreground/25 mt-4 leading-relaxed">
             {t('description')}
           </p>
+          <Link href="/now" className="inline-block mt-3 text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-foreground/60 transition-colors">
+            {t('headerNow')}
+          </Link>
         </section>
 
         <NatalChartForm />
