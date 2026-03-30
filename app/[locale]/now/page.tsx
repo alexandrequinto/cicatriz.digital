@@ -56,79 +56,95 @@ function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]
   });
 
   return (
-    <svg
-      viewBox="0 0 280 280"
-      width="280"
-      height="280"
-      aria-hidden="true"
-      className="mx-auto select-none cursor-default"
-    >
-      {/* Outer ring */}
-      <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="1" />
-      {/* Sign ring inner boundary */}
-      <circle cx={CX} cy={CY} r={R_SIGN_INNER} fill="none" stroke="currentColor" strokeOpacity="0.07" strokeWidth="0.75" />
-      {/* Planet area inner boundary */}
-      <circle cx={CX} cy={CY} r={48} fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="0.75" />
+    // Wrapper is exactly 280×280 — same as the SVG — so pixel coords map 1:1
+    <div className="relative mx-auto" style={{ width: 280, height: 280 }}>
+      <svg
+        viewBox="0 0 280 280"
+        width="280"
+        height="280"
+        aria-hidden="true"
+        className="select-none"
+      >
+        {/* Outer ring */}
+        <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="1" />
+        {/* Sign ring inner boundary */}
+        <circle cx={CX} cy={CY} r={R_SIGN_INNER} fill="none" stroke="currentColor" strokeOpacity="0.07" strokeWidth="0.75" />
+        {/* Planet area inner boundary */}
+        <circle cx={CX} cy={CY} r={48} fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="0.75" />
 
-      {/* Sign dividers */}
-      {signLines.map(({ outer, inner }, i) => (
-        <line
-          key={i}
-          x1={inner.x} y1={inner.y}
-          x2={outer.x} y2={outer.y}
-          stroke="currentColor"
-          strokeOpacity="0.12"
-          strokeWidth="0.75"
-        />
-      ))}
+        {/* Sign dividers */}
+        {signLines.map(({ outer, inner }, i) => (
+          <line
+            key={i}
+            x1={inner.x} y1={inner.y}
+            x2={outer.x} y2={outer.y}
+            stroke="currentColor"
+            strokeOpacity="0.12"
+            strokeWidth="0.75"
+          />
+        ))}
 
-      {/* Sign glyphs */}
-      {signGlyphs.map(({ sym, x, y, name }, i) => (
-        <g key={i}>
-          <title>{name}</title>
-          {/* Transparent hit area so the tooltip fires reliably */}
-          <circle cx={x} cy={y} r={9} fill="transparent" pointerEvents="all" />
+        {/* Sign glyphs */}
+        {signGlyphs.map(({ sym, x, y }, i) => (
           <text
+            key={i}
             x={x} y={y}
             textAnchor="middle"
             dominantBaseline="central"
             fontSize="9"
             fill="currentColor"
             fillOpacity="0.25"
-            pointerEvents="none"
           >
             {sym}
           </text>
-        </g>
-      ))}
+        ))}
 
-      {/* Planet glyphs */}
-      {positions.map(({ planet, symbol, longitude, isRetrograde, localizedName, localizedSign, degree, minute }) => {
-        const { x, y } = lonToXY(longitude, R_PLANET);
-        const tooltip = `${localizedName}${isRetrograde ? ' ℞' : ''} · ${localizedSign} ${degree}°${minute.toString().padStart(2, '0')}′`;
-        return (
-          <g key={planet}>
-            <title>{tooltip}</title>
-            {/* Transparent hit area so the tooltip fires reliably */}
-            <circle cx={x} cy={y} r={11} fill="transparent" pointerEvents="all" />
+        {/* Planet glyphs */}
+        {positions.map(({ planet, symbol, longitude, isRetrograde }) => {
+          const { x, y } = lonToXY(longitude, R_PLANET);
+          return (
             <text
+              key={planet}
               x={x} y={y}
               textAnchor="middle"
               dominantBaseline="central"
               fontSize="11"
               fill="currentColor"
               fillOpacity={isRetrograde ? 0.4 : 0.75}
-              pointerEvents="none"
             >
               {symbol}
             </text>
-          </g>
+          );
+        })}
+
+        {/* Center dot */}
+        <circle cx={CX} cy={CY} r={R_CENTER_DOT} fill="currentColor" fillOpacity="0.08" />
+      </svg>
+
+      {/* HTML tooltip overlays — SVG <title> is broken in Chrome */}
+
+      {signGlyphs.map(({ x, y, name }, i) => (
+        <span
+          key={i}
+          title={name}
+          className="absolute -translate-x-1/2 -translate-y-1/2 cursor-default"
+          style={{ left: x, top: y, width: 18, height: 18 }}
+        />
+      ))}
+
+      {positions.map(({ planet, longitude, isRetrograde, localizedName, localizedSign, degree, minute }) => {
+        const { x, y } = lonToXY(longitude, R_PLANET);
+        const tooltip = `${localizedName}${isRetrograde ? ' ℞' : ''} · ${localizedSign} ${degree}°${minute.toString().padStart(2, '0')}′`;
+        return (
+          <span
+            key={planet}
+            title={tooltip}
+            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-default"
+            style={{ left: x, top: y, width: 22, height: 22 }}
+          />
         );
       })}
-
-      {/* Center dot */}
-      <circle cx={CX} cy={CY} r={R_CENTER_DOT} fill="currentColor" fillOpacity="0.08" />
-    </svg>
+    </div>
   );
 }
 
