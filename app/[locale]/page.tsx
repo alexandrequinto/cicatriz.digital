@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import NatalChartForm from '@/components/NatalChartForm';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
@@ -33,7 +34,12 @@ export default function Home() {
                 <span key={s} className="text-xl text-foreground/20 leading-none">{s}</span>
               ))}
             </div>
-            <LocaleSwitcher />
+            <div className="flex items-center gap-4">
+              <Link href="/now" className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-foreground/60 transition-colors">
+                {t('headerNow')}
+              </Link>
+              <LocaleSwitcher />
+            </div>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
             Cicatriz
