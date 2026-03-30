@@ -84,8 +84,10 @@ function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]
 
       {/* Sign glyphs */}
       {signGlyphs.map(({ sym, x, y, name }, i) => (
-        <g key={i} style={{ cursor: 'default' }}>
+        <g key={i}>
           <title>{name}</title>
+          {/* Transparent hit area so the tooltip fires reliably */}
+          <circle cx={x} cy={y} r={9} fill="transparent" pointerEvents="all" />
           <text
             x={x} y={y}
             textAnchor="middle"
@@ -93,6 +95,7 @@ function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]
             fontSize="9"
             fill="currentColor"
             fillOpacity="0.25"
+            pointerEvents="none"
           >
             {sym}
           </text>
@@ -104,8 +107,10 @@ function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]
         const { x, y } = lonToXY(longitude, R_PLANET);
         const tooltip = `${localizedName}${isRetrograde ? ' ℞' : ''} · ${localizedSign} ${degree}°${minute.toString().padStart(2, '0')}′`;
         return (
-          <g key={planet} style={{ cursor: 'default' }}>
+          <g key={planet}>
             <title>{tooltip}</title>
+            {/* Transparent hit area so the tooltip fires reliably */}
+            <circle cx={x} cy={y} r={11} fill="transparent" pointerEvents="all" />
             <text
               x={x} y={y}
               textAnchor="middle"
@@ -113,6 +118,7 @@ function ZodiacWheel({ positions, localizedSigns }: { positions: WheelPosition[]
               fontSize="11"
               fill="currentColor"
               fillOpacity={isRetrograde ? 0.4 : 0.75}
+              pointerEvents="none"
             >
               {symbol}
             </text>
