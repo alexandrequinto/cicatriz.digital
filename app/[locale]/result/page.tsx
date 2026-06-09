@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { decodeBirthData, encodeBirthData } from '@/lib/birthData';
 import { verifyToken } from '@/lib/tokenSigning';
@@ -21,10 +20,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   const locale = await getLocale();
   const t = await getTranslations('result');
 
-  const headersList = await headers();
-  const host = headersList.get('host') ?? 'cicatriz.digital';
-  const proto = headersList.get('x-forwarded-proto') ?? 'https';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? `${proto}://${host}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://cicatriz.digital';
 
   if (!data) {
     return (

@@ -43,8 +43,7 @@ export default function CitySearch({ onSelect }: CitySearchProps) {
     setError(null);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'cicatriz-digital', 'Accept-Language': locale } }
+        `/api/search?q=${encodeURIComponent(q)}&locale=${encodeURIComponent(locale)}`
       );
       if (!res.ok) throw new Error();
       const data: NominatimResult[] = await res.json();

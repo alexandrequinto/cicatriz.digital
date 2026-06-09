@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { encryptToken, decryptToken, isEncryptedToken } from '@/lib/encryption';
 
-const TEST_KEY = 'test-encryption-key-for-vitest';
+const TEST_KEY = 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
 const PLAINTEXT = 'eyJuIjoiU29maWEiLCJkIjoiMTk5MC0wNS0xNSJ9'; // sample base64url payload
 
 function withKey(fn: () => void) {
@@ -80,7 +80,7 @@ describe('encryptToken / decryptToken', () => {
   it('throws when decrypting with wrong key', () => {
     withKey(() => {
       const token = encryptToken(PLAINTEXT);
-      process.env.ENCRYPTION_KEY = 'completely-different-key';
+      process.env.ENCRYPTION_KEY = 'cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
       expect(() => decryptToken(token)).toThrow();
       process.env.ENCRYPTION_KEY = TEST_KEY;
     });

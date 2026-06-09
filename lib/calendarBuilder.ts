@@ -37,7 +37,7 @@ export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHas
 
   for (const event of events) {
     const isAllDay = allDayCategories.has(event.category);
-    const uid = createHash('sha1')
+    const uid = createHash('sha256')
       .update(`${tokenHash}|${event.category}|${event.title}|${event.exactDate.toISOString().slice(0, 10)}`)
       .digest('hex')
       .slice(0, 24) + '@cicatriz.digital';

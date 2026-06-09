@@ -13,8 +13,7 @@ function toBase64url(buf: Buffer): string {
 export function signToken(payload: string): string {
   const secret = process.env.HMAC_SECRET;
   if (!secret) {
-    console.warn('[tokenSigning] HMAC_SECRET is not set — token will not be signed.');
-    return payload;
+    throw new Error('HMAC_SECRET is not set');
   }
   const sig = createHmac('sha256', secret).update(payload).digest();
   return `${payload}.${toBase64url(sig)}`;
@@ -24,7 +23,7 @@ export function signToken(payload: string): string {
  * Verifies a token (signed or legacy unsigned).
  * - Signed (`payload.sig`): verifies HMAC; throws if invalid.
  * - Legacy (no dot): accepted silently, returns `legacy: true`.
- * - No HMAC_SECRET: skips verification with a warning.
+ * - No HMAC_SECRET: throws.
  */
 export function verifyToken(token: string): { payload: string; legacy: boolean } {
   const dotIndex = token.lastIndexOf('.');
@@ -37,20 +36,12 @@ export function verifyToken(token: string): { payload: string; legacy: boolean }
 
   const secret = process.env.HMAC_SECRET;
   if (!secret) {
-    console.warn('[tokenSigning] HMAC_SECRET is not set — skipping token signature verification.');
-    return { payload, legacy: false };
+    throw new Error('HMAC_SECRET is not set');
   }
 
-  const expectedSigBuf = createHmac('sha256', secret).update(payload).digest();
-  const expectedSig = toBase64url(expectedSigBuf);
-
-  // Pad both buffers to the same length so timingSafeEqual always runs in constant time.
-  const receivedBuf = Buffer.from(receivedSig);
-  const expectedBuf = Buffer.from(expectedSig);
-  const len = Math.max(receivedBuf.length, expectedBuf.length);
-  const a = Buffer.concat([receivedBuf, Buffer.alloc(len - receivedBuf.length)]);
-  const b = Buffer.concat([expectedBuf, Buffer.alloc(len - expectedBuf.length)]);
-  const valid = timingSafeEqual(a, b) && receivedBuf.length === expectedBuf.length;
+  const expectedBuf = createHmac('sha256', secret).update(payload).digest();
+  const receivedBuf = Buffer.from(receivedSig, 'base64url');
+  const valid = receivedBuf.length === expectedBuf.length && timingSafeEqual(receivedBuf, expectedBuf);
 
   if (!valid) throw new Error('Invalid token signature');
   return { payload, legacy: false };

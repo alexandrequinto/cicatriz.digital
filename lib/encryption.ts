@@ -1,10 +1,13 @@
 import 'server-only';
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 function getKey(): Buffer {
   const raw = process.env.ENCRYPTION_KEY;
   if (!raw) throw new Error('ENCRYPTION_KEY environment variable is not set');
-  return createHash('sha256').update(raw).digest();
+  if (!/^[0-9a-fA-F]{64}$/.test(raw)) {
+    throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes). Generate with: openssl rand -hex 32');
+  }
+  return Buffer.from(raw, 'hex');
 }
 
 function toBase64url(buf: Buffer): string {

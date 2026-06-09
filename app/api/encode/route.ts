@@ -21,6 +21,9 @@ export async function POST(request: NextRequest) {
   if (!name || typeof name !== 'string' || !name.trim()) {
     return new Response('Missing name', { status: 400 });
   }
+  if (name.trim().length > 100) {
+    return new Response('Name too long', { status: 400 });
+  }
   if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return new Response('Invalid date', { status: 400 });
   }
@@ -43,6 +46,9 @@ export async function POST(request: NextRequest) {
   }
   if (!city || typeof city !== 'string') {
     return new Response('Missing city', { status: 400 });
+  }
+  if (city.length > 200) {
+    return new Response('City too long', { status: 400 });
   }
   if (filters !== undefined && (!Number.isInteger(filters) || (filters as number) < 0 || (filters as number) > 63)) {
     return new Response('Invalid filters', { status: 400 });

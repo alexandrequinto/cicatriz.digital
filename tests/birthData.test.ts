@@ -83,14 +83,11 @@ describe('verifyToken', () => {
     }
   });
 
-  it('skips verification and returns legacy:false when HMAC_SECRET is absent', () => {
+  it('throws when HMAC_SECRET is absent', () => {
     const originalSecret = process.env.HMAC_SECRET;
     delete process.env.HMAC_SECRET;
     try {
-      // A dot-containing token with no valid secret set: skip verification
-      const result = verifyToken('payload.fakesig');
-      expect(result.legacy).toBe(false);
-      expect(result.payload).toBe('payload');
+      expect(() => verifyToken('payload.fakesig')).toThrow('HMAC_SECRET is not set');
     } finally {
       if (originalSecret !== undefined) {
         process.env.HMAC_SECRET = originalSecret;
@@ -100,12 +97,11 @@ describe('verifyToken', () => {
 });
 
 describe('signToken', () => {
-  it('returns unsigned payload when HMAC_SECRET is absent', () => {
+  it('throws when HMAC_SECRET is absent', () => {
     const originalSecret = process.env.HMAC_SECRET;
     delete process.env.HMAC_SECRET;
     try {
-      const result = signToken('mypayload');
-      expect(result).toBe('mypayload');
+      expect(() => signToken('mypayload')).toThrow('HMAC_SECRET is not set');
     } finally {
       if (originalSecret !== undefined) {
         process.env.HMAC_SECRET = originalSecret;

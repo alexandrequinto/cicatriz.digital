@@ -3,7 +3,10 @@ import enData from './transitInterpretations.json';
 const enInterps: Record<string, string> = enData as Record<string, string>;
 const localeCache: Record<string, Record<string, string>> = {};
 
+const ALLOWED_LOCALES = new Set(['en', 'pt-BR']);
+
 function loadLocaleInterps(locale: string): Record<string, string> {
+  if (!ALLOWED_LOCALES.has(locale)) return {};
   if (localeCache[locale]) return localeCache[locale];
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
