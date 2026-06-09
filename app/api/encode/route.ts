@@ -16,14 +16,8 @@ export async function POST(request: NextRequest) {
     return new Response('Invalid request body', { status: 400 });
   }
 
-  const { name, date, time, lat, lng, tz, city, filters, locale } = body as Record<string, unknown>;
+  const { date, time, lat, lng, tz, city, filters, locale } = body as Record<string, unknown>;
 
-  if (!name || typeof name !== 'string' || !name.trim()) {
-    return new Response('Missing name', { status: 400 });
-  }
-  if (name.trim().length > 100) {
-    return new Response('Name too long', { status: 400 });
-  }
   if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return new Response('Invalid date', { status: 400 });
   }
@@ -56,7 +50,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const payload = encodeBirthData({
-      name: (name as string).trim(),
       date: date as string,
       time: (time as string | null | undefined) ?? null,
       lat: lat as number,

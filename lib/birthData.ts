@@ -1,7 +1,7 @@
 import type { BirthData } from '@/types/astro';
 
 type Payload = {
-  n: string;
+  n?: string;
   d: string;
   t: string;
   a: number;
@@ -33,7 +33,6 @@ function toBase64url(buf: Buffer): string {
  */
 export function encodeBirthData(data: BirthData): string {
   const payload: Payload = {
-    n: data.name,
     d: data.date,
     t: data.time ?? '',
     a: parseFloat(data.lat.toFixed(4)),
@@ -63,7 +62,7 @@ export function decodeBirthData(payload: string): BirthData {
     const json = Buffer.from(base64, 'base64').toString('utf8');
     const p: Payload = JSON.parse(json);
     return {
-      name: p.n,
+      name: p.n,   // present in old tokens; undefined for new ones
       date: p.d,
       time: p.t || null,
       lat: p.a,

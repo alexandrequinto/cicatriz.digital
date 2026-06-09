@@ -3,7 +3,6 @@ import { encodeBirthData, decodeBirthData } from '@/lib/birthData';
 import { signToken, verifyToken } from '@/lib/tokenSigning';
 
 const sample = {
-  name: 'Sofia',
   date: '1990-05-15',
   time: '14:30',
   lat: -23.5505,
@@ -16,7 +15,7 @@ describe('birthData', () => {
   it('round-trips birth data through encode/decode', () => {
     const token = encodeBirthData(sample);
     const result = decodeBirthData(token); // unsigned payload goes directly to decode
-    expect(result.name).toBe(sample.name);
+    expect(result.name).toBeUndefined();
     expect(result.date).toBe(sample.date);
     expect(result.time).toBe(sample.time);
     expect(result.lat).toBeCloseTo(sample.lat, 3);

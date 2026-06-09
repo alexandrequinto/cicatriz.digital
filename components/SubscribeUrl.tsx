@@ -6,10 +6,9 @@ import { useTranslations } from 'next-intl';
 
 interface SubscribeUrlProps {
   subscribeUrl: string;
-  name: string;
 }
 
-export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) {
+export default function SubscribeUrl({ subscribeUrl }: SubscribeUrlProps) {
   const t = useTranslations('subscribe');
   const [copied, setCopied] = useState(false);
 
@@ -56,7 +55,7 @@ export default function SubscribeUrl({ subscribeUrl, name }: SubscribeUrlProps) 
       {/* URL block */}
       <div className="border border-foreground/15 p-4 space-y-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30">
-          {t('personalCalendar', { name })}
+          {t('personalCalendar')}
         </p>
 
         <div className="flex gap-2">

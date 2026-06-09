@@ -85,7 +85,6 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           </Link>
           <div className="pt-2">
             <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 mb-1">{t('ready')}</p>
-            <p className="text-foreground/50 text-xs">{birthData.name}</p>
           </div>
         </div>
 
@@ -98,8 +97,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
             </Link>
           </div>
           <div>
-            <p className="text-xs text-foreground/70 font-mono">{birthData.name}</p>
-            <p className="text-[10px] text-foreground/50 font-mono mt-0.5">
+            <p className="text-[10px] text-foreground/50 font-mono">
               {birthDateFormatted} · {timeLabel} · {cityLabel}
             </p>
           </div>
@@ -133,7 +131,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           </div>
         )}
 
-        <SubscribeUrl subscribeUrl={subscribeUrl} name={birthData.name} />
+        <SubscribeUrl subscribeUrl={subscribeUrl} />
       </main>
 
       <Footer />

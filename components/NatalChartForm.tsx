@@ -8,7 +8,6 @@ import CitySearch from '@/components/CitySearch';
 import { FILTER_BITS, ALL_FILTERS } from '@/lib/birthData';
 
 interface FormErrors {
-  name?: string;
   date?: string;
   city?: string;
 }
@@ -30,7 +29,6 @@ export default function NatalChartForm() {
     { bit: FILTER_BITS['eclipse'],       label: t('filterEclipseLabel'),   hint: t('filterEclipseHint') },
   ];
 
-  const [name, setName] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [unknownTime, setUnknownTime] = useState(false);
@@ -55,7 +53,6 @@ export default function NatalChartForm() {
 
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
-    if (!name.trim()) errs.name = t('nameRequired');
     if (!date) errs.date = t('birthDateRequired');
     if (!city || lat === null || lng === null || !tz) errs.city = t('cityRequired');
     return errs;
@@ -73,7 +70,7 @@ export default function NatalChartForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(), date,
+          date,
           time: unknownTime || !time ? null : time,
           lat, lng, tz, city, filters, locale,
         }),
@@ -94,20 +91,6 @@ export default function NatalChartForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      {/* Name */}
-      <div>
-        <label htmlFor="name" className={fieldLabel}>{t('name')}</label>
-        <input
-          id="name" type="text" value={name}
-          onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-          required autoComplete="given-name" placeholder={t('namePlaceholder')}
-          aria-invalid={!!errors.name}
-          aria-describedby={errors.name ? 'name-error' : undefined}
-          className={fieldInput}
-        />
-        {errors.name && <p id="name-error" role="alert" className="mt-1 text-[10px] text-foreground/50">{errors.name}</p>}
-      </div>
-
       {/* Date + Time — stack on mobile, side-by-side on sm+ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-hidden">
         <div className="min-w-0">

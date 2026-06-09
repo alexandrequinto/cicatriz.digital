@@ -5,9 +5,8 @@ import { getCalStrings } from './i18n/calendarStrings';
 
 export function buildCalendar(birth: BirthData, events: TransitEvent[], tokenHash: string) {
   const strings = getCalStrings(birth.locale);
-  const calName = strings.calendarNameTemplate.replace('{name}', birth.name);
+  const calName = strings.calendarNameTemplate;
   const calDesc = strings.calendarDescTemplate
-    .replace('{name}', birth.name)
     .replace('{date}', birth.date)
     .replace('{city}', birth.city);
 

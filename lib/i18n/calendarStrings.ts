@@ -52,8 +52,8 @@ const en: CalStrings = {
     retrograde: 'Retrograde',
     eclipse: 'Eclipse',
   },
-  calendarNameTemplate: "{name}'s Astrology",
-  calendarDescTemplate: 'Personalized transits for {name}, born {date} in {city}',
+  calendarNameTemplate: 'Cicatriz · Astrology',
+  calendarDescTemplate: 'Personalized transits, born {date} in {city}',
 };
 
 const ptBR: CalStrings = {
@@ -93,8 +93,8 @@ const ptBR: CalStrings = {
     retrograde: 'Retrógrado',
     eclipse: 'Eclipse',
   },
-  calendarNameTemplate: 'Astrologia de {name}',
-  calendarDescTemplate: 'Trânsitos personalizados para {name}, nascido em {date} em {city}',
+  calendarNameTemplate: 'Cicatriz · Astrologia',
+  calendarDescTemplate: 'Trânsitos personalizados, nascimento {date} em {city}',
 };
 
 const locales: Record<string, CalStrings> = {

@@ -1,5 +1,5 @@
 export interface BirthData {
-  name: string;
+  name?: string;
   date: string;       // ISO "YYYY-MM-DD"
   time: string | null; // "HH:MM" or null
   lat: number;

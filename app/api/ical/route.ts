@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate decoded fields
-  if (!birth.name || !birth.date || typeof birth.lat !== 'number' || typeof birth.lng !== 'number') {
+  if (!birth.date || typeof birth.lat !== 'number' || typeof birth.lng !== 'number') {
     return new Response('Malformed birth data', { status: 400 });
   }
 
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     // Derive a stable hash from birth data fields so event UIDs don't change
     // when the same birth data is re-encrypted with a new random IV.
     const tokenHash = createHash('sha256')
-      .update(`${birth.name}|${birth.date}|${birth.lat}|${birth.lng}|${birth.tz}`)
+      .update(`${birth.name ?? ''}|${birth.date}|${birth.lat}|${birth.lng}|${birth.tz}`)
       .digest('hex');
     const calendar = buildCalendar(birth, filteredEvents, tokenHash);
     icsContent = calendar.toString();
@@ -157,13 +157,11 @@ export async function GET(request: NextRequest) {
     return new Response('Failed to generate calendar', { status: 500 });
   }
 
-  const safeName = birth.name.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
-
   return new Response(icsContent, {
     status: 200,
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
-      'Content-Disposition': `attachment; filename="${safeName}-astro.ics"`,
+      'Content-Disposition': 'attachment; filename="cicatriz-astro.ics"',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
     },

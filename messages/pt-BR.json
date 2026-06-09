@@ -30,9 +30,6 @@
     "back": "← Cicatriz"
   },
   "form": {
-    "name": "Nome",
-    "namePlaceholder": "Seu nome",
-    "nameRequired": "Obrigatório",
     "birthDate": "Data de nascimento",
     "birthDateRequired": "Obrigatório",
     "birthDateInvalid": "Use o formato AAAA-MM-DD",
@@ -85,7 +82,7 @@
     "addToCalendar": "Adicionar ao calendário",
     "appleCal": "Apple Calendar",
     "googleCal": "Google Calendar",
-    "personalCalendar": "{name} · calendário de trânsitos pessoais",
+    "personalCalendar": "Calendário de trânsitos pessoais",
     "copyUrlHint": "Ou copie a URL para Outlook e outros apps iCal",
     "copy": "Copiar",
     "copied": "✓",
